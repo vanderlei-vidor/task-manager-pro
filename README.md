@@ -27,9 +27,7 @@ Sistema completo de gestão de tarefas desenvolvido com Java e Spring Boot, apre
   <img src="https://github.com/user-attachments/assets/40420007-67d5-44c1-b069-266b00b05641" >
 </p>
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/3c1d4e53-4f07-4272-94ad-1648d8cd9d6c" >
-</p>
+
 
 
 
