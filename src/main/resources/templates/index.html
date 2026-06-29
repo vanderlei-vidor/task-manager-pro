@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- TÍTULO DA PÁGINA -->
+        <div class="page-header mb-4">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Bem-vindo de volta, <span th:text="${nomeUsuario}">Usuário</span>! 👋</p>
+        </div>
+        
+        <!-- CARDS DE ESTATÍSTICAS - STATUS -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card-premium stat-card blue">
+                    <div class="stat-header">
+                        <span class="stat-label">Total</span>
+                        <div class="stat-icon blue">
+                            <i class="bi bi-collection"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${total}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-graph-up"></i>
+                        <span>Todas as tarefas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-premium stat-card yellow">
+                    <div class="stat-header">
+                        <span class="stat-label">Pendentes</span>
+                        <div class="stat-icon yellow">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdPendentes}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span>Aguardando início</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-premium stat-card cyan">
+                    <div class="stat-header">
+                        <span class="stat-label">Em Andamento</span>
+                        <div class="stat-icon cyan">
+                            <i class="bi bi-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdFazendo}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-activity"></i>
+                        <span>Em progresso</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card-premium stat-card green">
+                    <div class="stat-header">
+                        <span class="stat-label">Concluídas</span>
+                        <div class="stat-icon green">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdConcluidas}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-trophy"></i>
+                        <span>Finalizadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CARDS DE PRIORIDADE -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card-premium stat-card red">
+                    <div class="stat-header">
+                        <span class="stat-label">Alta Prioridade</span>
+                        <div class="stat-icon red">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdAlta}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-fire"></i>
+                        <span>Urgentes</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-premium stat-card purple">
+                    <div class="stat-header">
+                        <span class="stat-label">Média Prioridade</span>
+                        <div class="stat-icon purple">
+                            <i class="bi bi-dash-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdMedia}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-lightning"></i>
+                        <span>Importantes</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-premium stat-card green">
+                    <div class="stat-header">
+                        <span class="stat-label">Baixa Prioridade</span>
+                        <div class="stat-icon green">
+                            <i class="bi bi-arrow-down-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${qtdBaixa}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-clock-history"></i>
+                        <span>Pode esperar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- GRÁFICO E TAGS -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-8">
+                <div class="card-premium">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0" style="font-weight: 600;">Distribuição de Status</h5>
+                        <span class="badge bg-primary-subtle text-primary">Últimos 30 dias</span>
+                    </div>
+                    <div style="position: relative; height: 280px;">
+                        <canvas id="meuGrafico"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card-premium h-100">
+                    <h5 class="mb-3" style="font-weight: 600;">
+                        <i class="bi bi-tags-fill me-2"></i>Minhas Tags
+                    </h5>
+                    
+                    <!-- Formulário criar tag -->
+                    <form th:action="@{/tags/salvar}" method="post" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="name" class="form-control" placeholder="Nova tag..." required>
+                            <input type="color" name="color" class="form-control form-control-color" value="#6366f1" style="width: 50px;">
+                            <button type="submit" class="btn btn-primary-premium" style="padding: 8px 16px;">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Lista de tags -->
+                    <div class="tags-list">
+                        <div th:if="${#lists.isEmpty(listaTags)}" class="text-muted small text-center py-3">
+                            Nenhuma tag criada ainda
+                        </div>
+                        <div th:each="tag : ${listaTags}" class="tag-item">
+                            <span class="badge-tag" 
+                                  th:style="'background:' + ${tag.color}"
+                                  th:text="${tag.name}">Tag</span>
+                            <a th:href="@{/tags/excluir/{id}(id=${tag.id})}" 
+                               class="tag-delete"
+                               onclick="return confirm('Excluir esta tag?')">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LISTA DE TAREFAS -->
+        <div class="card-premium">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="mb-1" style="font-weight: 600;">Tarefas</h5>
+                    <p class="text-muted small mb-0">Gerencie todas as suas tarefas</p>
+                </div>
+                <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Nova Tarefa</span>
+                </button>
+            </div>
+            
+            <!-- TABELA DE TAREFAS -->
+            <div class="table-responsive">
+                <table class="table table-premium">
+                    <thead>
+                        <tr>
+                            <th>Tarefa</th>
+                            <th>Status</th>
+                            <th>Prioridade</th>
+                            <th>Tags</th>
+                            <th>Prazo</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="task : ${listaDeTarefas}"
+                            th:classappend="${task.isAtrasada() ? 'task-overdue' : ''} + 
+                                           ${task.isVenceHoje() ? 'task-due-today' : ''}">
+                            
+                            <!-- Tarefa -->
+                            <td>
+                                <div class="task-title-cell">
+                                    <div class="task-title" 
+                                         th:text="${task.title}"
+                                         th:classappend="${task.status.name() == 'DONE' ? 'task-done' : ''}">
+                                    </div>
+                                    <div class="task-description" 
+                                         th:if="${task.description}"
+                                         th:text="${task.description}">
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- Status -->
+                            <td>
+                                <span class="badge-status"
+                                      th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
+                                                     (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}"
+                                      th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
+                                              (task.status.name() == 'DOING' ? 'Em Andamento' : 'Concluída')}">
+                                </span>
+                            </td>
+                            
+                            <!-- Prioridade -->
+                            <td>
+                                <span class="badge-priority"
+                                      th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                                     (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')}"
+                                      th:text="${task.priority.displayName}">
+                                </span>
+                            </td>
+                            
+                            <!-- Tags -->
+                            <td>
+                                <div class="task-tags">
+                                    <span th:each="tag : ${task.tags}" 
+                                          class="badge-tag-sm"
+                                          th:style="'background:' + ${tag.color}"
+                                          th:text="${tag.name}">Tag</span>
+                                    <span th:if="${#sets.isEmpty(task.tags)}" class="text-muted">—</span>
+                                </div>
+                            </td>
+                            
+                            <!-- Prazo -->
+                            <td>
+                                <div class="task-deadline">
+                                    <span th:text="${task.dueDate != null ? #temporals.format(task.dueDate, 'dd/MM/yyyy') : '—'}"></span>
+                                    <span th:if="${task.isAtrasada()}" class="deadline-indicator overdue">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                    </span>
+                                    <span th:if="${task.isVenceHoje()}" class="deadline-indicator today">
+                                        <i class="bi bi-clock-fill"></i>
+                                    </span>
+                                </div>
+                            </td>
+                            
+                            <!-- Ações -->
+                            <td class="text-end">
+                                <div class="task-actions">
+                                    <form th:if="${task.status.name() != 'DONE'}" 
+                                          th:action="@{/tarefas/concluir/{id}(id=${task.id})}" 
+                                          method="post" style="display:inline;">
+                                        <button type="submit" class="btn-action btn-success" title="Concluir">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn-action btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            th:data-bs-target="'#modalEditar' + ${task.id}"
+                                            title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <a th:href="@{/tarefas/excluir/{id}(id=${task.id})}" 
+                                       class="btn-action btn-danger"
+                                       onclick="return confirm('Deseja realmente excluir esta tarefa?')"
+                                       title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div th:if="${#lists.isEmpty(listaDeTarefas)}" class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <h6>Nenhuma tarefa ainda</h6>
+                    <p>Clique em "Nova Tarefa" para começar!</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAL NOVA TAREFA -->
+        <div class="modal fade" id="modalNovaTarefa" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-premium">
+                    <form th:action="@{/tarefas/salvar}" method="post">
+                        <div class="modal-header-premium">
+                            <h5 class="modal-title">Nova Tarefa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label-premium">Título *</label>
+                                <input type="text" name="title" class="form-control-premium" placeholder="O que precisa ser feito?" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-premium">Descrição</label>
+                                <textarea name="description" class="form-control-premium" rows="3" placeholder="Detalhes da tarefa..."></textarea>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Status</label>
+                                    <select name="status" class="form-control-premium">
+                                        <option value="TODO">Pendente</option>
+                                        <option value="DOING">Em Andamento</option>
+                                        <option value="DONE">Concluída</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Prioridade</label>
+                                    <select name="priority" class="form-control-premium">
+                                        <option value="LOW">🟢 Baixa</option>
+                                        <option value="MEDIUM" selected>🟡 Média</option>
+                                        <option value="HIGH">🔴 Alta</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-premium">Prazo *</label>
+                                    <input type="date" name="dueDate" class="form-control-premium" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer-premium">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-premium">
+                                <i class="bi bi-check-lg"></i>
+                                Criar Tarefa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAIS DE EDIÇÃO -->
+        <div th:each="task : ${listaDeTarefas}">
+            <div class="modal fade" th:id="'modalEditar' + ${task.id}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modal-premium">
+                        <form th:action="@{/tarefas/editar/{id}(id=${task.id})}" method="post">
+                            <div class="modal-header-premium">
+                                <h5 class="modal-title">Editar Tarefa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label-premium">Título *</label>
+                                    <input type="text" name="title" th:value="${task.title}" class="form-control-premium" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label-premium">Descrição</label>
+                                    <textarea name="description" class="form-control-premium" rows="3" th:text="${task.description}"></textarea>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label-premium">Status</label>
+                                        <select name="status" class="form-control-premium">
+                                            <option value="TODO" th:selected="${task.status.name() == 'TODO'}">Pendente</option>
+                                            <option value="DOING" th:selected="${task.status.name() == 'DOING'}">Em Andamento</option>
+                                            <option value="DONE" th:selected="${task.status.name() == 'DONE'}">Concluída</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-premium">Prioridade</label>
+                                        <select name="priority" class="form-control-premium">
+                                            <option value="LOW" th:selected="${task.priority.name() == 'LOW'}">🟢 Baixa</option>
+                                            <option value="MEDIUM" th:selected="${task.priority.name() == 'MEDIUM'}">🟡 Média</option>
+                                            <option value="HIGH" th:selected="${task.priority.name() == 'HIGH'}">🔴 Alta</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label-premium">Prazo *</label>
+                                        <input type="date" name="dueDate" th:value="${task.dueDate}" class="form-control-premium" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer-premium">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary-premium">Salvar Alterações</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DADOS PARA O GRÁFICO -->
+        <div id="chartData" 
+             th:attr="data-pendentes=${qtdPendentes}, 
+                      data-fazendo=${qtdFazendo}, 
+                      data-concluidas=${qtdConcluidas}"
+             style="display: none;"></div>
+        
+        <!-- SCRIPT DO GRÁFICO -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const chartData = document.getElementById('chartData');
+                const pendentes = parseInt(chartData.dataset.pendentes) || 0;
+                const fazendo = parseInt(chartData.dataset.fazendo) || 0;
+                const concluidas = parseInt(chartData.dataset.concluidas) || 0;
+                
+                const ctx = document.getElementById('meuGrafico').getContext('2d');
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pendentes', 'Em Andamento', 'Concluídas'],
+                        datasets: [{
+                            data: [pendentes, fazendo, concluidas],
+                            backgroundColor: ['#f59e0b', '#06b6d4', '#10b981'],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        family: 'Inter',
+                                        size: 13,
+                                        weight: '500'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+        
+    </div>
+</body>
+</html>

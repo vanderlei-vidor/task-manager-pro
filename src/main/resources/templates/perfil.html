@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Meu Perfil</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- HEADER -->
+        <div class="perfil-header mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-person-circle me-2"></i>Meu Perfil
+                </h1>
+                <p class="page-subtitle">Gerencie suas informações pessoais</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- CARD DE INFORMAÇÕES -->
+            <div class="col-lg-4">
+                <div class="card-premium perfil-card">
+                    <div class="perfil-avatar">
+                        <span th:text="${#strings.substring(profile.nome, 0, 1)}">U</span>
+                    </div>
+                    <h4 class="perfil-nome" th:text="${profile.nome}">Usuário</h4>
+                    <p class="perfil-email" th:text="${profile.email}">email@teste.com</p>
+                    
+                    <div class="perfil-stats">
+                        <div class="perfil-stat">
+                            <i class="bi bi-calendar-check"></i>
+                            <span>Membro desde</span>
+                            <strong th:text="${#temporals.format(profile.dataCadastro, 'dd/MM/yyyy')}">01/01/2026</strong>
+                        </div>
+                        <div class="perfil-stat">
+                            <i class="bi bi-list-task"></i>
+                            <span>Total de tarefas</span>
+                            <strong th:text="${profile.totalTasks}">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FORMULÁRIOS -->
+            <div class="col-lg-8">
+                <!-- EDITAR DADOS -->
+                <div class="card-premium mb-4">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Dados
+                    </h5>
+                    
+                    <form th:action="@{/perfil/atualizar}" method="post" th:object="${profileDTO}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label-premium">Nome</label>
+                                <input type="text" th:field="*{nome}" class="form-control-premium" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-premium">E-mail</label>
+                                <input type="email" th:field="*{email}" class="form-control-premium" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary-premium">
+                                <i class="bi bi-check-lg"></i> Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- ALTERAR SENHA -->
+                <div class="card-premium">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-shield-lock me-2"></i>Alterar Senha
+                    </h5>
+                    
+                    <form th:action="@{/perfil/alterar-senha}" method="post" th:object="${passwordDTO}">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label-premium">Senha Atual</label>
+                                <input type="password" th:field="*{senhaAtual}" class="form-control-premium" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-premium">Nova Senha</label>
+                                <input type="password" th:field="*{novaSenha}" class="form-control-premium" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-premium">Confirmar Nova Senha</label>
+                                <input type="password" th:field="*{confirmarSenha}" class="form-control-premium" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary-premium">
+                                <i class="bi bi-shield-check"></i> Alterar Senha
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

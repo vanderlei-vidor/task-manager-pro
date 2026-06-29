@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Calendário - Semana</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <!-- HEADER -->
+        <div class="calendar-header mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-week me-2"></i>Visualização Semanal
+                </h1>
+                <p class="page-subtitle">
+                    <span th:text="${#temporals.format(inicioSemana, 'dd/MM/yyyy')}">01/01/2026</span>
+                    até
+                    <span th:text="${#temporals.format(fimSemana, 'dd/MM/yyyy')}">07/01/2026</span>
+                </p>
+            </div>
+            <div class="calendar-actions">
+                <!-- ✅ VIEW SWITCHER -->
+                <div class="view-switcher">
+                    <a th:href="@{/calendario}" class="view-btn">
+                        <i class="bi bi-grid-3x3-gap-fill"></i>
+                        <span>Mês</span>
+                    </a>
+                    <a th:href="@{/calendario/semana}" class="view-btn active">
+                        <i class="bi bi-calendar-week"></i>
+                        <span>Semana</span>
+                    </a>
+                    <a th:href="@{/calendario/dia}" class="view-btn">
+                        <i class="bi bi-calendar-day"></i>
+                        <span>Dia</span>
+                    </a>
+                </div>
+
+                <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Nova Tarefa</span>
+                </button>
+            </div>
+        </div>
+
+        
+        <!-- GRID SEMANAL -->
+        <div class="week-grid card-premium">
+            <div th:each="dia, stat : ${tasksPorDia}" class="week-day-column"
+                th:classappend="${stat.index >= 5 ? 'weekend' : ''}">
+
+                <!-- Cabeçalho do dia -->
+                <div class="week-day-header">
+                    <div class="week-day-name" th:text="${diasSemana[stat.index]}">Segunda</div>
+                    <div class="week-day-number"
+                        th:classappend="${inicioSemana.plusDays(stat.index) == hoje ? 'today' : ''}"
+                        th:text="${inicioSemana.plusDays(stat.index).dayOfMonth}">1</div>
+                </div>
+
+                <!-- Tasks do dia -->
+                <div class="week-day-tasks" th:attr="data-dia-semana=${stat.index + 1}, data-drag='true'">
+
+                    <div th:each="task : ${dia}" class="week-task-card" draggable="true"
+                        th:attr="data-task-id=${task.id}" th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')} + 
+                                ${task.status.name() == 'DONE' ? ' task-done' : ''} +
+                                ${task.isAtrasada() ? ' task-overdue' : ''}" data-bs-toggle="modal"
+                        th:attrappend="data-bs-target='#modalTask' + ${task.id}">
+
+                        <div class="week-task-priority-dot"></div>
+                        <div class="week-task-content">
+                            <div class="week-task-title" th:text="${task.title}">Task</div>
+                            <div class="week-task-meta">
+                                <span class="badge-status-sm" th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
+                                             (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}"
+                                    th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
+                                      (task.status.name() == 'DOING' ? 'Andamento' : 'Concluída')}">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(dia)}" class="week-empty">
+                        <i class="bi bi-inbox"></i>
+                        <p>Sem tarefas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAIS DE TASKS -->
+        <div th:each="diaIdx : ${#numbers.sequence(1, 7)}">
+            <div th:if="${tasksPorDiaSemana[diaIdx] != null}" th:each="task : ${tasksPorDiaSemana[diaIdx]}">
+                <div class="modal fade" th:id="'modalTask' + ${task.id}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content modal-premium">
+                            <div class="modal-header-premium">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-calendar-event me-2"></i>
+                                    <span th:text="${task.title}">Título</span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="task-detail-row">
+                                    <span class="detail-label"><i class="bi bi-calendar3"></i> Data</span>
+                                    <span class="detail-value"
+                                        th:text="${#temporals.format(task.dueDate, 'dd/MM/yyyy')}">01/01/2026</span>
+                                </div>
+                                <div class="task-detail-row">
+                                    <span class="detail-label"><i class="bi bi-flag"></i> Status</span>
+                                    <span class="badge-status"
+                                        th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
+                                                         (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}" th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
+                                                  (task.status.name() == 'DOING' ? 'Em Andamento' : 'Concluída')}">
+                                    </span>
+                                </div>
+                                <div class="task-detail-row">
+                                    <span class="detail-label"><i class="bi bi-exclamation-circle"></i>
+                                        Prioridade</span>
+                                    <span class="badge-priority"
+                                        th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                                         (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')}"
+                                        th:text="${task.priority.displayName}">
+                                    </span>
+                                </div>
+                                <div class="task-detail-row" th:if="${task.description}">
+                                    <span class="detail-label"><i class="bi bi-text-paragraph"></i> Descrição</span>
+                                    <span class="detail-value" th:text="${task.description}">Descrição</span>
+                                </div>
+                            </div>
+                            <div class="modal-footer-premium">
+                                <form th:if="${task.status.name() != 'DONE'}"
+                                    th:action="@{/tarefas/concluir/{id}(id=${task.id})}" method="post"
+                                    style="display:inline;">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-lg"></i> Concluir
+                                    </button>
+                                </form>
+                                <a th:href="@{/tarefas/excluir/{id}(id=${task.id})}" class="btn btn-danger"
+                                    onclick="return confirm('Excluir?')">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL NOVA TAREFA -->
+        <div class="modal fade" id="modalNovaTarefa" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-premium">
+                    <form th:action="@{/tarefas/salvar}" method="post">
+                        <div class="modal-header-premium">
+                            <h5 class="modal-title">Nova Tarefa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label-premium">Título *</label>
+                                <input type="text" name="title" class="form-control-premium" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-premium">Descrição</label>
+                                <textarea name="description" class="form-control-premium" rows="3"></textarea>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Status</label>
+                                    <select name="status" class="form-control-premium">
+                                        <option value="TODO">Pendente</option>
+                                        <option value="DOING">Em Andamento</option>
+                                        <option value="DONE">Concluída</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Prioridade</label>
+                                    <select name="priority" class="form-control-premium">
+                                        <option value="LOW">🟢 Baixa</option>
+                                        <option value="MEDIUM" selected>🟡 Média</option>
+                                        <option value="HIGH">🔴 Alta</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-premium">Prazo *</label>
+                                    <input type="date" name="dueDate" class="form-control-premium" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer-premium">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-premium">Criar Tarefa</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

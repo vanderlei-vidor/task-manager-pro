@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Kanban Board</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <!-- HEADER DO KANBAN -->
+        <div class="kanban-header mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-kanban me-2"></i>Kanban Board
+                </h1>
+                <p class="page-subtitle">Visualize e organize suas tarefas em colunas</p>
+            </div>
+            <div class="kanban-actions">
+                <button class="btn btn-outline-premium" id="btnFiltrar">
+                    <i class="bi bi-funnel"></i>
+                    <span>Filtros</span>
+                </button>
+                <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Nova Tarefa</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- BARRA DE PROGRESSO SEMANAL -->
+        <div class="progress-card mb-4">
+            <div class="progress-info">
+                <div>
+                    <div class="progress-title">
+                        <i class="bi bi-trophy-fill me-2"></i>
+                        Progresso Geral
+                    </div>
+                    <div class="progress-subtitle">
+                        <span th:text="${concluidas}">0</span> de <span th:text="${total}">0</span> tarefas concluídas
+                    </div>
+                </div>
+                <div class="progress-percentage">
+                    <span class="percentage-value" th:text="${progresso}">0</span>
+                    <span class="percentage-symbol">%</span>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar-fill" th:style="'width:' + ${progresso} + '%'" role="progressbar"></div>
+            </div>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                    <span><strong th:text="${urgentes}">0</strong> urgentes</span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-clock-fill text-warning"></i>
+                    <span><strong th:text="${venceHoje}">0</strong> vencem hoje</span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <span><strong th:text="${concluidas}">0</strong> concluídas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTROS RÁPIDOS -->
+        <div class="quick-filters mb-4">
+            <div class="filter-label">
+                <i class="bi bi-funnel-fill"></i>
+                Filtrar por:
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    Todas
+                </button>
+                <button class="filter-btn" data-filter="HIGH">
+                    🔴 Alta Prioridade
+                </button>
+                <button class="filter-btn" data-filter="MEDIUM">
+                    🟡 Média Prioridade
+                </button>
+                <button class="filter-btn" data-filter="LOW">
+                    🟢 Baixa Prioridade
+                </button>
+                <button class="filter-btn" data-filter="overdue">
+                    ⚠️ Atrasadas
+                </button>
+            </div>
+        </div>
+
+        <!-- KANBAN BOARD -->
+        <div class="kanban-board">
+
+            <!-- COLUNA TODO -->
+            <div class="kanban-column column-todo">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-icon" style="background: #f59e0b;">
+                            <i class="bi bi-circle"></i>
+                        </span>
+                        <span>Pendente</span>
+                    </div>
+                    <span class="column-count" th:text="${#lists.size(todoTasks)}">0</span>
+                </div>
+                <div class="column-body" data-status="TODO">
+                    <div th:each="task : ${todoTasks}" class="task-card"
+                        th:attr="data-id=${task.id}, data-priority=${task.priority.name()}" th:classappend="${task.isAtrasada() ? 'card-overdue' : ''} + 
+                                ${task.isVenceHoje() ? 'card-due-today' : ''}">
+
+                        <!-- Indicador de prioridade -->
+                        <div class="card-priority-indicator" th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                    (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')}">
+                        </div>
+
+                        <!-- Conteúdo do card -->
+                        <div class="card-content">
+                            <div class="card-title" th:text="${task.title}">Título</div>
+                            <div class="card-description" th:if="${task.description}" th:text="${task.description}">
+                                Descrição</div>
+
+                            <!-- Tags -->
+                            <div class="card-tags" th:if="${task.tags != null && !task.tags.empty}">
+                                <span th:each="tag : ${task.tags}" class="card-tag"
+                                    th:style="'background:' + ${tag.color}" th:text="${tag.name}">Tag</span>
+                            </div>
+
+                            <!-- Footer do card -->
+                            <div class="card-footer">
+                                <div class="card-deadline" th:if="${task.dueDate != null}">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span th:text="${#temporals.format(task.dueDate, 'dd/MM')}">30/06</span>
+                                    <span th:if="${task.isAtrasada()}" class="deadline-badge overdue">Atrasada</span>
+                                    <span th:if="${task.isVenceHoje()}" class="deadline-badge today">Hoje</span>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="card-action-btn" th:attr="data-bs-target='#modalEditar' + ${task.id}"
+                                        data-bs-toggle="modal" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form th:action="@{/tarefas/mover/{id}(id=${task.id})}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="status" value="DOING">
+                                        <button type="submit" class="card-action-btn btn-move"
+                                            title="Mover para Em Andamento">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty state -->
+                    <div th:if="${#lists.isEmpty(todoTasks)}" class="column-empty">
+                        <i class="bi bi-inbox"></i>
+                        <p>Nenhuma tarefa pendente</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DOING -->
+            <div class="kanban-column column-doing">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-icon" style="background: #06b6d4;">
+                            <i class="bi bi-play-circle-fill"></i>
+                        </span>
+                        <span>Em Andamento</span>
+                    </div>
+                    <span class="column-count" th:text="${#lists.size(doingTasks)}">0</span>
+                </div>
+                <div class="column-body" data-status="DOING">
+                    <div th:each="task : ${doingTasks}" class="task-card"
+                        th:attr="data-id=${task.id}, data-priority=${task.priority.name()}">
+
+                        <div class="card-priority-indicator" th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                    (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')}">
+                        </div>
+
+                        <div class="card-content">
+                            <div class="card-title" th:text="${task.title}">Título</div>
+                            <div class="card-description" th:if="${task.description}" th:text="${task.description}">
+                                Descrição</div>
+
+                            <div class="card-tags" th:if="${task.tags != null && !task.tags.empty}">
+                                <span th:each="tag : ${task.tags}" class="card-tag"
+                                    th:style="'background:' + ${tag.color}" th:text="${tag.name}">Tag</span>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="card-deadline" th:if="${task.dueDate != null}">
+                                    <i class="bi bi-calendar3"></i>
+                                    <span th:text="${#temporals.format(task.dueDate, 'dd/MM')}">30/06</span>
+                                </div>
+                                <div class="card-actions">
+                                    <form th:action="@{/tarefas/mover/{id}(id=${task.id})}" method="post"
+                                        style="display:inline;">
+                                        <input type="hidden" name="status" value="TODO">
+                                        <button type="submit" class="card-action-btn btn-move-back"
+                                            title="Voltar para Pendente">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                    </form>
+                                    <button class="card-action-btn" th:attr="data-bs-target='#modalEditar' + ${task.id}"
+                                        data-bs-toggle="modal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form th:action="@{/tarefas/concluir/{id}(id=${task.id})}" method="post"
+                                        style="display:inline;">
+                                        <button type="submit" class="card-action-btn btn-complete" title="Concluir">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(doingTasks)}" class="column-empty">
+                        <i class="bi bi-play-circle"></i>
+                        <p>Nenhuma tarefa em andamento</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUNA DONE -->
+            <div class="kanban-column column-done">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="column-icon" style="background: #10b981;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+                        <span>Concluídas</span>
+                    </div>
+                    <span class="column-count" th:text="${#lists.size(doneTasks)}">0</span>
+                </div>
+                <div class="column-body" data-status="DONE">
+                    <div th:each="task : ${doneTasks}" class="task-card card-completed" th:attr="data-id=${task.id}">
+
+                        <div class="card-priority-indicator priority-low"></div>
+
+                        <div class="card-content">
+                            <div class="card-title task-done" th:text="${task.title}">Título</div>
+                            <div class="card-description" th:if="${task.description}" th:text="${task.description}">
+                                Descrição</div>
+
+                            <div class="card-tags" th:if="${task.tags != null && !task.tags.empty}">
+                                <span th:each="tag : ${task.tags}" class="card-tag"
+                                    th:style="'background:' + ${tag.color}" th:text="${tag.name}">Tag</span>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="card-deadline completed">
+                                    <i class="bi bi-check2-all"></i>
+                                    <span>Concluída</span>
+                                </div>
+                                <div class="card-actions">
+                                    <a th:href="@{/tarefas/excluir/{id}(id=${task.id})}"
+                                        class="card-action-btn btn-delete"
+                                        onclick="return confirm('Excluir esta tarefa?')" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(doneTasks)}" class="column-empty">
+                        <i class="bi bi-trophy"></i>
+                        <p>Nenhuma tarefa concluída ainda</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MODAL NOVA TAREFA (mesmo do index) -->
+        <div class="modal fade" id="modalNovaTarefa" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-premium">
+                    <form th:action="@{/tarefas/salvar}" method="post">
+                        <div class="modal-header-premium">
+                            <h5 class="modal-title">Nova Tarefa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label-premium">Título *</label>
+                                <input type="text" name="title" class="form-control-premium"
+                                    placeholder="O que precisa ser feito?" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-premium">Descrição</label>
+                                <textarea name="description" class="form-control-premium" rows="3"
+                                    placeholder="Detalhes da tarefa..."></textarea>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Status</label>
+                                    <select name="status" class="form-control-premium">
+                                        <option value="TODO">Pendente</option>
+                                        <option value="DOING">Em Andamento</option>
+                                        <option value="DONE">Concluída</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-premium">Prioridade</label>
+                                    <select name="priority" class="form-control-premium">
+                                        <option value="LOW">🟢 Baixa</option>
+                                        <option value="MEDIUM" selected>🟡 Média</option>
+                                        <option value="HIGH">🔴 Alta</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-premium">Prazo *</label>
+                                    <input type="date" name="dueDate" class="form-control-premium" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer-premium">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-premium">
+                                <i class="bi bi-check-lg"></i>
+                                Criar Tarefa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAIS DE EDIÇÃO -->
+        <div th:each="task : ${todoTasks}">
+            <div th:replace="~{fragments/modal-editar :: modalEditar(${task})}"></div>
+        </div>
+        <div th:each="task : ${doingTasks}">
+            <div th:replace="~{fragments/modal-editar :: modalEditar(${task})}"></div>
+        </div>
+        <div th:each="task : ${doneTasks}">
+            <div th:replace="~{fragments/modal-editar :: modalEditar(${task})}"></div>
+        </div>
+
+    </div>
+</body>
+
+</html>

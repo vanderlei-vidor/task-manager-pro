@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Tags</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- HEADER -->
+        <div class="tags-header mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-tags-fill me-2"></i>Gerenciar Tags
+                </h1>
+                <p class="page-subtitle">Organize suas tarefas com tags coloridas</p>
+            </div>
+            <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTag">
+                <i class="bi bi-plus-lg"></i>
+                <span>Nova Tag</span>
+            </button>
+        </div>
+        
+        <!-- STATS CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card-premium stat-card purple">
+                    <div class="stat-header">
+                        <span class="stat-label">Total de Tags</span>
+                        <div class="stat-icon purple">
+                            <i class="bi bi-tags-fill"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${totalTags}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-collection"></i>
+                        <span>Tags criadas</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-premium stat-card blue">
+                    <div class="stat-header">
+                        <span class="stat-label">Total de Tarefas</span>
+                        <div class="stat-icon blue">
+                            <i class="bi bi-list-task"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" th:text="${totalTasks}">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-check2-square"></i>
+                        <span>Tarefas criadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LISTA DE TAGS -->
+        <div class="card-premium">
+            <div class="card-header-premium">
+                <h5 class="mb-0" style="font-weight: 600;">
+                    <i class="bi bi-tags me-2"></i>Suas Tags
+                </h5>
+                <span class="badge bg-primary" th:text="${totalTags} + ' tags'">0 tags</span>
+            </div>
+            
+            <div class="tags-grid">
+                <div th:if="${#lists.isEmpty(tags)}" class="empty-state-tags">
+                    <i class="bi bi-tags"></i>
+                    <h6>Nenhuma tag criada ainda</h6>
+                    <p>Crie sua primeira tag para organizar melhor suas tarefas!</p>
+                    <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTag">
+                        <i class="bi bi-plus-lg"></i> Criar Primeira Tag
+                    </button>
+                </div>
+                
+                <div th:each="tag : ${tags}" class="tag-card" th:attr="data-tag-id=${tag.id}">
+                    <div class="tag-card-header">
+                        <div class="tag-color-preview" th:style="'background:' + ${tag.color}"></div>
+                        <h6 class="tag-name" th:text="${tag.name}">Tag</h6>
+                    </div>
+                    
+                    <div class="tag-card-body">
+                        <div class="tag-stats">
+                            <div class="tag-stat">
+                                <i class="bi bi-list-task"></i>
+                                <span th:text="${tagUsageCount[tag.id] != null ? tagUsageCount[tag.id] : 0}">0</span>
+                                <span class="text-muted small">tarefas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tag-actions">
+                            <button class="btn-action-sm btn-edit" 
+                                    th:attr="data-bs-target='#modalEditarTag' + ${tag.id}"
+                                    data-bs-toggle="modal"
+                                    title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <form th:action="@{/tags/{id}(id=${tag.id})}" 
+                                  method="post" 
+                                  style="display:inline;">
+                                <input type="hidden" name="_method" value="delete">
+                                <button type="submit" 
+                                        class="btn-action-sm btn-delete"
+                                        onclick="return confirm('Excluir esta tag? As tarefas manterão a tag.')"
+                                        title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAL NOVA TAG -->
+        <div class="modal fade" id="modalNovaTag" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-premium">
+                    <form th:action="@{/tags/salvar}" method="post">
+                        <div class="modal-header-premium">
+                            <h5 class="modal-title">
+                                <i class="bi bi-plus-circle me-2"></i>Nova Tag
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label-premium">Nome da Tag *</label>
+                                <input type="text" name="name" class="form-control-premium" placeholder="Ex: Trabalho, Pessoal, Urgente..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-premium">Cor</label>
+                                <div class="color-picker-container">
+                                    <input type="color" name="color" class="color-picker" value="#6366f1">
+                                    <div class="color-presets">
+                                        <div class="color-preset" style="background: #6366f1" onclick="document.querySelector('.color-picker').value='#6366f1'"></div>
+                                        <div class="color-preset" style="background: #ec4899" onclick="document.querySelector('.color-picker').value='#ec4899'"></div>
+                                        <div class="color-preset" style="background: #10b981" onclick="document.querySelector('.color-picker').value='#10b981'"></div>
+                                        <div class="color-preset" style="background: #f59e0b" onclick="document.querySelector('.color-picker').value='#f59e0b'"></div>
+                                        <div class="color-preset" style="background: #ef4444" onclick="document.querySelector('.color-picker').value='#ef4444'"></div>
+                                        <div class="color-preset" style="background: #06b6d4" onclick="document.querySelector('.color-picker').value='#06b6d4'"></div>
+                                        <div class="color-preset" style="background: #8b5cf6" onclick="document.querySelector('.color-picker').value='#8b5cf6'"></div>
+                                        <div class="color-preset" style="background: #6c757d" onclick="document.querySelector('.color-picker').value='#6c757d'"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tag-preview">
+                                <span class="tag-preview-badge" id="tagPreview">
+                                    <span class="tag-color-dot" id="tagPreviewDot" style="background: #6366f1"></span>
+                                    <span id="tagPreviewName">Nome da Tag</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="modal-footer-premium">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary-premium">
+                                <i class="bi bi-check-lg"></i> Criar Tag
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MODAIS DE EDIÇÃO -->
+        <div th:each="tag : ${tags}">
+            <div class="modal fade" th:id="'modalEditarTag' + ${tag.id}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modal-premium">
+                        <form th:action="@{/tags/editar/{id}(id=${tag.id})}" method="post">
+                            <div class="modal-header-premium">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-pencil me-2"></i>Editar Tag
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label-premium">Nome da Tag *</label>
+                                    <input type="text" name="name" th:value="${tag.name}" class="form-control-premium" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label-premium">Cor</label>
+                                    <input type="color" name="color" th:value="${tag.color}" class="color-picker">
+                                </div>
+                            </div>
+                            <div class="modal-footer-premium">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary-premium">Salvar Alterações</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

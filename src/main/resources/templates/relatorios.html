@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Relatórios</title>
+    <link rel="stylesheet" th:href="@{/css/reports.css}">
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- HEADER -->
+        <div class="reports-header mb-4">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Relatórios & Insights
+                </h1>
+                <p class="page-subtitle">Análise detalhada da sua produtividade</p>
+            </div>
+            
+            <!-- Filtro de período -->
+            <div class="period-filter">
+                <a th:href="@{/relatorios(days=7)}" 
+                   class="period-btn"
+                   th:classappend="${selectedDays == 7} ? 'active' : ''">
+                    7 dias
+                </a>
+                <a th:href="@{/relatorios(days=30)}" 
+                   class="period-btn"
+                   th:classappend="${selectedDays == 30} ? 'active' : ''">
+                    30 dias
+                </a>
+                <a th:href="@{/relatorios(days=90)}" 
+                   class="period-btn"
+                   th:classappend="${selectedDays == 90} ? 'active' : ''">
+                    90 dias
+                </a>
+            </div>
+        </div>
+        
+        <!-- PERÍODO DO RELATÓRIO -->
+        <div class="period-info card-premium mb-4">
+            <div class="period-info-content">
+                <i class="bi bi-calendar-range"></i>
+                <span>Período: <strong th:text="${#temporals.format(report.startDate, 'dd/MM/yyyy')}">01/01/2026</strong> 
+                      até <strong th:text="${#temporals.format(report.endDate, 'dd/MM/yyyy')}">30/01/2026</strong>
+                      (<span th:text="${report.days}">30</span> dias)
+                </span>
+            </div>
+        </div>
+        
+        <!-- CARDS DE MÉTRICAS PRINCIPAIS -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card metric-total">
+                    <div class="metric-icon">
+                        <i class="bi bi-collection-fill"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Total de Tarefas</div>
+                        <div class="metric-value" th:text="${report.totalTasks}">0</div>
+                        <div class="metric-subtitle">no período</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card metric-completed">
+                    <div class="metric-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Concluídas</div>
+                        <div class="metric-value" th:text="${report.completedTasks}">0</div>
+                        <div class="metric-subtitle" th:text="${report.completionRate + '% de taxa'}">0%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card metric-pending">
+                    <div class="metric-icon">
+                        <i class="bi bi-clock-fill"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Pendentes</div>
+                        <div class="metric-value" th:text="${report.pendingTasks}">0</div>
+                        <div class="metric-subtitle">aguardando</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card metric-overdue">
+                    <div class="metric-icon">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="metric-content">
+                        <div class="metric-label">Atrasadas</div>
+                        <div class="metric-value" th:text="${report.overdueTasks}">0</div>
+                        <div class="metric-subtitle">atenção!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PROGRESS RING + INSIGHTS -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-4">
+                <div class="card-premium h-100">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-bullseye me-2"></i>Taxa de Conclusão
+                    </h5>
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring-bg" cx="100" cy="100" r="85"></circle>
+                            <circle class="progress-ring-fill" 
+                                    cx="100" cy="100" r="85"
+                                    th:attr="data-percent=${report.completionRate}"></circle>
+                        </svg>
+                        <div class="progress-ring-text">
+                            <div class="progress-ring-value" th:text="${report.completionRate}">0</div>
+                            <div class="progress-ring-label">%</div>
+                        </div>
+                    </div>
+                    <div class="progress-ring-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Concluídas</span>
+                            <span class="stat-value" th:text="${report.completedTasks}">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Em andamento</span>
+                            <span class="stat-value" th:text="${report.inProgressTasks}">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Pendentes</span>
+                            <span class="stat-value" th:text="${report.pendingTasks}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8">
+                <div class="card-premium h-100">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-lightbulb-fill me-2"></i>Insights Inteligentes
+                    </h5>
+                    <div class="insights-list">
+                        <div th:each="insight : ${report.insights}" class="insight-item">
+                            <span th:text="${insight}">Insight</span>
+                        </div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="summary-weekly">
+                            <i class="bi bi-calendar-week"></i>
+                            <span th:text="${report.weeklySummary}">Resumo semanal</span>
+                        </div>
+                        <div class="summary-monthly">
+                            <i class="bi bi-calendar-month"></i>
+                            <span th:text="${report.monthlySummary}">Resumo mensal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- GRÁFICOS -->
+        <div class="row g-3 mb-4">
+            <!-- Gráfico de Status -->
+            <div class="col-lg-4">
+                <div class="card-premium">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-pie-chart-fill me-2"></i>Por Status
+                    </h5>
+                    <div class="chart-container">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Prioridade -->
+            <div class="col-lg-4">
+                <div class="card-premium">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-flag-fill me-2"></i>Por Prioridade
+                    </h5>
+                    <div class="chart-container">
+                        <canvas id="chartPriority"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Dia da Semana -->
+            <div class="col-lg-4">
+                <div class="card-premium">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-calendar-day me-2"></i>Por Dia da Semana
+                    </h5>
+                    <div class="chart-container">
+                        <canvas id="chartDayOfWeek"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- HEATMAP + GRÁFICO DE LINHA -->
+        <div class="row g-3 mb-4">
+            <!-- Heatmap estilo GitHub -->
+            <div class="col-12">
+                <div class="card-premium">
+                    <h5 class="card-title-premium">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>Mapa de Atividade
+                    </h5>
+                    <p class="text-muted small mb-3">Sua produtividade ao longo do tempo</p>
+                    <div class="heatmap-container" id="heatmap">
+                        <!-- Gerado via JavaScript -->
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>Menos</span>
+                        <div class="heatmap-level level-0"></div>
+                        <div class="heatmap-level level-1"></div>
+                        <div class="heatmap-level level-2"></div>
+                        <div class="heatmap-level level-3"></div>
+                        <div class="heatmap-level level-4"></div>
+                        <span>Mais</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PRODUTIVIDADE -->
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card-premium stat-highlight">
+                    <div class="stat-highlight-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <div class="stat-highlight-content">
+                        <div class="stat-highlight-label">Média Diária</div>
+                        <div class="stat-highlight-value" th:text="${report.tasksPerDay}">0</div>
+                        <div class="stat-highlight-unit">tarefas/dia</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-premium stat-highlight">
+                    <div class="stat-highlight-icon">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <div class="stat-highlight-content">
+                        <div class="stat-highlight-label">Melhor Dia</div>
+                        <div class="stat-highlight-value" th:text="${report.bestDay}">-</div>
+                        <div class="stat-highlight-unit">da semana</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-premium stat-highlight">
+                    <div class="stat-highlight-icon">
+                        <i class="bi bi-graph-down"></i>
+                    </div>
+                    <div class="stat-highlight-content">
+                        <div class="stat-highlight-label">Dia Menos Produtivo</div>
+                        <div class="stat-highlight-value" th:text="${report.worstDay}">-</div>
+                        <div class="stat-highlight-unit">da semana</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DADOS PARA JAVASCRIPT -->
+        <div id="reportData" 
+             th:attr="data-status='${report.tasksByStatus}',
+                      data-priority='${report.tasksByPriority}',
+                      data-dayofweek='${report.tasksByDayOfWeek}',
+                      data-date='${report.tasksByDate}'"
+             style="display: none;">
+        </div>
+        
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/reports.js}"></script>
+</body>
+</html>

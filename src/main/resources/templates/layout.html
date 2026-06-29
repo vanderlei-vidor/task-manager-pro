@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Gestor Pro</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Google Fonts: Inter (estilo Linear/Notion) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS Customizado Premium -->
+    <link rel="stylesheet" th:href="@{/css/premium.css}">
+</head>
+
+<!-- MODAL NOVA TAREFA GLOBAL -->
+<div class="modal fade" id="modalNovaTarefa" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-premium">
+            <form th:action="@{/tarefas/salvar}" method="post">
+                <div class="modal-header-premium">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle me-2"></i>Nova Tarefa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-premium">Título *</label>
+                        <input type="text" name="title" class="form-control-premium"
+                            placeholder="O que precisa ser feito?" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-premium">Descrição</label>
+                        <textarea name="description" class="form-control-premium" rows="3"
+                            placeholder="Detalhes..."></textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label-premium">Status</label>
+                            <select name="status" class="form-control-premium">
+                                <option value="TODO">Pendente</option>
+                                <option value="DOING">Em Andamento</option>
+                                <option value="DONE">Concluída</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label-premium">Prioridade</label>
+                            <select name="priority" class="form-control-premium">
+                                <option value="LOW">🟢 Baixa</option>
+                                <option value="MEDIUM" selected>🟡 Média</option>
+                                <option value="HIGH">🔴 Alta</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label-premium">Prazo *</label>
+                            <input type="date" name="dueDate" class="form-control-premium" required>
+                        </div>
+                        <!-- ✅ CAMPO DE TAGS CORRIGIDO -->
+                        <div class="col-12">
+                            <label class="form-label-premium">
+                                <i class="bi bi-tags me-1"></i>Tags
+                            </label>
+                            <div class="tags-selector">
+                                <div th:each="tag : ${listaTags}" class="tag-checkbox-wrapper">
+                                    <input type="checkbox" class="tag-checkbox" th:id="'tag-' + ${tag.id}" name="tagIds"
+                                        th:value="${tag.id}">
+                                    <label th:for="'tag-' + ${tag.id}" class="tag-label"
+                                        th:style="'--tag-color:' + ${tag.color}">
+                                        <span class="tag-color-dot" th:style="'background:' + ${tag.color}"></span>
+                                        <span th:text="${tag.name}">Tag</span>
+                                    </label>
+                                </div>
+                                <div th:if="${#lists.isEmpty(listaTags)}" class="text-muted small p-2">
+                                    Nenhuma tag criada ainda. Crie tags na seção de tags!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer-premium">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary-premium">
+                        <i class="bi bi-check-lg"></i> Criar Tarefa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<body>
+    <!-- SIDEBAR FIXA -->
+    <aside class="sidebar">
+
+        <nav class="sidebar-nav">
+            <a th:href="@{/}" class="nav-item" th:classappend="${currentPage == 'dashboard' ? 'active' : ''}">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a th:href="@{/kanban}" class="nav-item" th:classappend="${currentPage == 'kanban' ? 'active' : ''}">
+                <i class="bi bi-kanban"></i>
+                <span>Kanban</span>
+            </a>
+
+            <a th:href="@{/calendario}" class="nav-item"
+                th:classappend="${currentPage == 'calendario' ? 'active' : ''}">
+                <i class="bi bi-calendar3"></i>
+                <span>Calendário</span>
+            </a>
+
+            <a th:href="@{/tags}" class="nav-item" th:classappend="${currentPage == 'tags' ? 'active' : ''}">
+                <i class="bi bi-tags-fill"></i>
+                <span>Tags</span>
+            </a>
+
+            <a th:href="@{/relatorios}" class="nav-item"
+                th:classappend="${currentPage == 'relatorios' ? 'active' : ''}">
+                <i class="bi bi-bar-chart-fill"></i>
+                <span>Relatórios</span>
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a href="#" class="nav-item">
+                <i class="bi bi-gear-fill"></i>
+                <span>Configurações</span>
+            </a>
+        </nav>
+        <a th:href="@{/perfil}" class="nav-item" th:classappend="${currentPage == 'perfil' ? 'active' : ''}">
+            <i class="bi bi-person-circle"></i>
+            <span>Meu Perfil</span>
+        </a>
+
+        <div class="sidebar-footer">
+
+            <div class="user-info">
+                <div class="user-avatar" th:text="${#strings.substring(nomeUsuario, 0, 1)}">U</div>
+                <div class="user-details">
+                    <div class="user-name" th:text="${nomeUsuario}">Usuário</div>
+                    <div class="user-role">Plano Pro</div>
+                </div>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-logout" title="Sair">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="btn-menu-mobile" id="btnMenuMobile">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" placeholder="Buscar tarefas, tags..." id="globalSearch">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" title="Notificações">
+                    <i class="bi bi-bell"></i>
+                    <span class="badge-notification">3</span>
+                </button>
+                <button class="btn-icon" title="Modo Escuro" id="btnTheme">
+                    <i class="bi bi-moon-fill"></i>
+                </button>
+                <button class="btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa"
+                    title="Nova Tarefa (Ctrl+N)">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Nova Tarefa</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTEÚDO DA PÁGINA -->
+        <div class="content-wrapper">
+            <!-- MENSAGENS FLASH -->
+            <div th:if="${mensagem}" class="alert alert-premium alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${mensagem}">Mensagem</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- CONTEÚDO ESPECÍFICO DA PÁGINA -->
+            <div layout:fragment="content">
+                <!-- Conteúdo será inserido aqui -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/premium.js}"></script>
+</body>
+
+</html>
