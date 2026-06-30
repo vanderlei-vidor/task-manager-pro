@@ -1,13 +1,35 @@
-HELP.md
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE Settings
+settings.json
+.vscode/settings.json
+
+# Compiled class files
+*.class
+
+# Maven
 target/
 !.mvn/wrapper/maven-wrapper.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
 bin/
 .settings/
 .project
 .classpath
 .factorypath
-.idea/
-*.iml
-.vscode/
+
+# Logs
 *.log
-application.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+HELP.md

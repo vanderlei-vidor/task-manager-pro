@@ -1,92 +1,92 @@
 package com.example.demo.security;
 
 import com.example.demo.service.JwtUtilService;
-import com.example.demo.service.AutenticacaoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_PREFIX = "Bearer ";
-
     private final JwtUtilService jwtUtilService;
-    private final AutenticacaoService autenticacaoService;
-
-    public JwtAuthenticationFilter(JwtUtilService jwtUtilService, 
-                                   AutenticacaoService autenticacaoService) {
-        this.jwtUtilService = jwtUtilService;
-        this.autenticacaoService = autenticacaoService;
-    }
+    private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                    HttpServletResponse response, 
-                                    FilterChain filterChain) 
-            throws ServletException, IOException {
-
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-
-        // Verifica se tem token e começa com "Bearer "
-        if (StringUtils.hasText(authorizationHeader) && 
-            authorizationHeader.startsWith(BEARER_PREFIX)) {
+    protected void doFilterInternal(HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   FilterChain filterChain) throws ServletException, IOException {
+        
+        String requestPath = request.getServletPath();
+        
+        // ✅ PULAR ROTAS PÚBLICAS (não validar token)
+        if (requestPath.startsWith("/auth/") || 
+            requestPath.equals("/login") || 
+            requestPath.equals("/cadastrar") ||
+            requestPath.startsWith("/css/") ||
+            requestPath.startsWith("/js/") ||
+            requestPath.startsWith("/images/") ||
+            requestPath.equals("/favicon.ico") ||
+            requestPath.equals("/error")) {
             
-            String jwtToken = authorizationHeader.substring(BEARER_PREFIX.length());
-
-            try {
-                // 1. Extrai o email do token
-                String email = jwtUtilService.getClaims(jwtToken).getSubject();
-
-                // 2. Verifica se ainda não está autenticado
-                if (email != null && 
-                    SecurityContextHolder.getContext().getAuthentication() == null) {
-                    
-                    // 3. ✅ BUSCA O USUÁRIO NO BANCO (CRÍTICO!)
-                    UserDetails userDetails = autenticacaoService.loadUserByUsername(email);
-
-                    // 4. ✅ VALIDA O TOKEN COM OS DADOS DO USUÁRIO
-                    if (jwtUtilService.isTokenValid(jwtToken, userDetails)) {
-                        
-                        // 5. ✅ CRIA AUTENTICAÇÃO COM AS AUTHORITIES CORRETAS!
-                        UsernamePasswordAuthenticationToken authentication = 
-                            new UsernamePasswordAuthenticationToken(
-                                userDetails,           // ✅ UserDetails completo
-                                null,                  // credenciais (não precisa)
-                                userDetails.getAuthorities()  // ✅ ROLES AQUI!
-                            );
-
-                        authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                        );
-
-                        // 6. Seta no contexto de segurança
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        
-                        log.debug("Usuário {} autenticado com sucesso via JWT", email);
-                    }
-                }
-
-            } catch (Exception e) {
-                log.warn("Token JWT inválido: {}", e.getMessage());
-                // Não faz nada - mantém o contexto limpo
-            }
+            log.debug("🔓 Rota pública detectada: {} - pulando validação JWT", requestPath);
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // Continua a cadeia de filtros
+        // ✅ Extrair token do header
+        final String authHeader = request.getHeader("Authorization");
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("🔓 Sem token no header - continuando sem autenticação");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        final String jwt = authHeader.substring(7);
+
+        try {
+            // ✅ Validar token
+            final String userEmail = jwtUtilService.extractUsername(jwt);
+
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                if (jwtUtilService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = 
+                        new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                        );
+
+                    authToken.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.debug("✅ Usuário autenticado via JWT: {}", userEmail);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("⚠️ Token inválido ou expirado: {}", e.getMessage());
+            // ✅ NÃO lançar exceção! Apenas não autenticar
+            // O Spring Security vai decidir se a rota exige autenticação
+        }
+
         filterChain.doFilter(request, response);
     }
 }

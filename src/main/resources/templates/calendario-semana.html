@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout}">
-
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <title>Calendário - Semana</title>
 </head>
-
 <body>
     <div layout:fragment="content">
-
+        
         <!-- HEADER -->
         <div class="calendar-header mb-4">
             <div>
@@ -17,12 +16,12 @@
                 </h1>
                 <p class="page-subtitle">
                     <span th:text="${#temporals.format(inicioSemana, 'dd/MM/yyyy')}">01/01/2026</span>
-                    até
+                    até 
                     <span th:text="${#temporals.format(fimSemana, 'dd/MM/yyyy')}">07/01/2026</span>
                 </p>
             </div>
             <div class="calendar-actions">
-                <!-- ✅ VIEW SWITCHER -->
+                <!-- VIEW SWITCHER -->
                 <div class="view-switcher">
                     <a th:href="@{/calendario}" class="view-btn">
                         <i class="bi bi-grid-3x3-gap-fill"></i>
@@ -37,51 +36,59 @@
                         <span>Dia</span>
                     </a>
                 </div>
-
+                
                 <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa">
                     <i class="bi bi-plus-lg"></i>
                     <span>Nova Tarefa</span>
                 </button>
             </div>
         </div>
-
         
-        <!-- GRID SEMANAL -->
+        <!-- GRID SEMANAL - CORRIGIDO! -->
         <div class="week-grid card-premium">
-            <div th:each="dia, stat : ${tasksPorDia}" class="week-day-column"
-                th:classappend="${stat.index >= 5 ? 'weekend' : ''}">
-
+            <div th:each="dia, stat : ${tasksPorDia}" 
+                 class="week-day-column"
+                 th:classappend="${stat.index >= 5 ? 'weekend' : ''}">
+                
                 <!-- Cabeçalho do dia -->
                 <div class="week-day-header">
                     <div class="week-day-name" th:text="${diasSemana[stat.index]}">Segunda</div>
                     <div class="week-day-number"
-                        th:classappend="${inicioSemana.plusDays(stat.index) == hoje ? 'today' : ''}"
-                        th:text="${inicioSemana.plusDays(stat.index).dayOfMonth}">1</div>
+                         th:classappend="${inicioSemana.plusDays(stat.index) == hoje ? 'today' : ''}"
+                         th:text="${inicioSemana.plusDays(stat.index).dayOfMonth}">1</div>
                 </div>
-
+                
                 <!-- Tasks do dia -->
-                <div class="week-day-tasks" th:attr="data-dia-semana=${stat.index + 1}, data-drag='true'">
-
-                    <div th:each="task : ${dia}" class="week-task-card" draggable="true"
-                        th:attr="data-task-id=${task.id}" th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
-                                (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')} + 
-                                ${task.status.name() == 'DONE' ? ' task-done' : ''} +
-                                ${task.isAtrasada() ? ' task-overdue' : ''}" data-bs-toggle="modal"
-                        th:attrappend="data-bs-target='#modalTask' + ${task.id}">
-
+                <div class="week-day-tasks" 
+                     th:attr="data-dia-semana=${stat.index + 1}, data-drag='true'">
+                    
+                    <!-- ✅ CORRETO: Itera sobre 'dia' (que é uma lista de tasks) -->
+                    <div th:each="task : ${dia}"
+                         class="week-task-card"
+                         draggable="true"
+                         th:attr="data-task-id=${task.id}"
+                         th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                        (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')} + 
+                                        ${task.status.name() == 'DONE' ? ' task-done' : ''} +
+                                        ${task.isAtrasada() ? ' task-overdue' : ''}"
+                         data-bs-toggle="modal"
+                         th:attrappend="data-bs-target='#modalTask' + ${task.id}">
+                        
                         <div class="week-task-priority-dot"></div>
                         <div class="week-task-content">
                             <div class="week-task-title" th:text="${task.title}">Task</div>
                             <div class="week-task-meta">
-                                <span class="badge-status-sm" th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
-                                             (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}"
-                                    th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
-                                      (task.status.name() == 'DOING' ? 'Andamento' : 'Concluída')}">
+                                <span class="badge-status-sm"
+                                      th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
+                                                     (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}"
+                                      th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
+                                              (task.status.name() == 'DOING' ? 'Andamento' : 'Concluída')}">
                                 </span>
                             </div>
                         </div>
                     </div>
-
+                    
+                    <!-- Empty state -->
                     <div th:if="${#lists.isEmpty(dia)}" class="week-empty">
                         <i class="bi bi-inbox"></i>
                         <p>Sem tarefas</p>
@@ -89,10 +96,10 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- MODAIS DE TASKS -->
-        <div th:each="diaIdx : ${#numbers.sequence(1, 7)}">
-            <div th:if="${tasksPorDiaSemana[diaIdx] != null}" th:each="task : ${tasksPorDiaSemana[diaIdx]}">
+        <div th:each="dia : ${tasksPorDia}">
+            <div th:each="task : ${dia}">
                 <div class="modal fade" th:id="'modalTask' + ${task.id}" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content modal-premium">
@@ -106,24 +113,23 @@
                             <div class="modal-body">
                                 <div class="task-detail-row">
                                     <span class="detail-label"><i class="bi bi-calendar3"></i> Data</span>
-                                    <span class="detail-value"
-                                        th:text="${#temporals.format(task.dueDate, 'dd/MM/yyyy')}">01/01/2026</span>
+                                    <span class="detail-value" th:text="${#temporals.format(task.dueDate, 'dd/MM/yyyy')}">01/01/2026</span>
                                 </div>
                                 <div class="task-detail-row">
                                     <span class="detail-label"><i class="bi bi-flag"></i> Status</span>
                                     <span class="badge-status"
-                                        th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
-                                                         (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}" th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
+                                          th:classappend="${task.status.name() == 'DONE' ? 'badge-success' : 
+                                                         (task.status.name() == 'DOING' ? 'badge-info' : 'badge-warning')}"
+                                          th:text="${task.status.name() == 'TODO' ? 'Pendente' : 
                                                   (task.status.name() == 'DOING' ? 'Em Andamento' : 'Concluída')}">
                                     </span>
                                 </div>
                                 <div class="task-detail-row">
-                                    <span class="detail-label"><i class="bi bi-exclamation-circle"></i>
-                                        Prioridade</span>
+                                    <span class="detail-label"><i class="bi bi-exclamation-circle"></i> Prioridade</span>
                                     <span class="badge-priority"
-                                        th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
+                                          th:classappend="${task.priority.name() == 'HIGH' ? 'priority-high' : 
                                                          (task.priority.name() == 'MEDIUM' ? 'priority-medium' : 'priority-low')}"
-                                        th:text="${task.priority.displayName}">
+                                          th:text="${task.priority.displayName}">
                                     </span>
                                 </div>
                                 <div class="task-detail-row" th:if="${task.description}">
@@ -132,15 +138,16 @@
                                 </div>
                             </div>
                             <div class="modal-footer-premium">
-                                <form th:if="${task.status.name() != 'DONE'}"
-                                    th:action="@{/tarefas/concluir/{id}(id=${task.id})}" method="post"
-                                    style="display:inline;">
+                                <form th:if="${task.status.name() != 'DONE'}" 
+                                      th:action="@{/tarefas/concluir/{id}(id=${task.id})}" 
+                                      method="post" style="display:inline;">
                                     <button type="submit" class="btn btn-success">
                                         <i class="bi bi-check-lg"></i> Concluir
                                     </button>
                                 </form>
-                                <a th:href="@{/tarefas/excluir/{id}(id=${task.id})}" class="btn btn-danger"
-                                    onclick="return confirm('Excluir?')">
+                                <a th:href="@{/tarefas/excluir/{id}(id=${task.id})}" 
+                                   class="btn btn-danger"
+                                   onclick="return confirm('Excluir?')">
                                     <i class="bi bi-trash"></i> Excluir
                                 </a>
                             </div>
@@ -149,7 +156,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- MODAL NOVA TAREFA -->
         <div class="modal fade" id="modalNovaTarefa" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
@@ -199,8 +206,7 @@
                 </div>
             </div>
         </div>
-
+        
     </div>
 </body>
-
 </html>
