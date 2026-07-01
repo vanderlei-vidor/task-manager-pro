@@ -1,0 +1,16 @@
+{
+  "name": "task-manager-pro",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "sass:watch": "sass --watch src/main/resources/static/scss/main.scss:src/main/resources/static/css/main.css",
+    "sass:build": "sass src/main/resources/static/scss/main.scss:src/main/resources/static/css/main.css --style=compressed",
+    "sass:dev": "sass --watch src/main/resources/static/scss/main.scss:src/main/resources/static/css/main.css --source-map",
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "sass": "^1.69.0",
+    "vite": "^5.0.0"
+  }
+}

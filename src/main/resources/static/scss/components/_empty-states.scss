@@ -1,0 +1,83 @@
+// ========================================
+// EMPTY STATES - GESTOR PRO
+// ========================================
+
+// Se necessário no seu fluxo, descomente as importações:
+
+@use '../abstracts/variables' as *;
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-tertiary);
+  
+  i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  h6 {
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
+
+.empty-state-tags {
+  @extend .empty-state;
+  grid-column: 1 / -1; // Perfeito para o layout em Grid do painel!
+  
+  i {
+    font-size: 64px;
+    opacity: 0.3;
+  }
+  
+  p {
+    margin-bottom: 20px;
+  }
+}
+
+.empty-state-day {
+  @extend .empty-state;
+  
+  p {
+    margin-bottom: 20px;
+  }
+}
+
+.column-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-tertiary);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  // Ajustado: margin auto global garante centralização vertical e horizontal em flexbox/grid containers
+  margin: auto; 
+  
+  i {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-size: $font-size-base;
+  }
+}
+
+.week-empty {
+  @extend .column-empty;
+  padding: 20px 10px;
+  border-radius: 8px;
+  
+  i {
+    font-size: 24px;
+  }
+  
+  p {
+    font-size: 11px;
+    margin: 4px 0 0 0;
+  }
+}

@@ -1,0 +1,117 @@
+// ========================================
+// PÁGINA DE TAGS - GESTOR PRO
+// ========================================
+
+// Se necessário no seu fluxo, descomente as importações:
+@use '../abstracts/variables' as *;
+@use '..//abstracts/mixins' as *;
+
+.tags-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  @include slide-in-up;
+  margin-bottom: 24px;
+}
+
+.card-header-premium {
+  @include flex-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+// ===== TAGS GRID =====
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+
+.tag-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: var(--transition);
+  animation: fadeInUp 0.4s ease-out backwards;
+  
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) { animation-delay: #{$i * 0.05}s; }
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: $primary;
+  }
+}
+
+.tag-card-header {
+  // Ajustado: Trocado flex-center para evitar conflitos com o flex: 1 do título
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tag-color-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1); // Leve borda interna para cores muito claras não sumirem no fundo
+}
+
+.tag-name {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  text-align: left; // Garante o alinhamento correto à esquerda
+}
+
+.tag-card-body {
+  padding: 16px;
+}
+
+.tags-stats { // Corrigido erro de digitação do plural para bater com o container
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tag-stat {
+  // Ajustado: Trocado flex-center por alinhamento linear natural
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: $font-size-md;
+  color: var(--text-secondary);
+  
+  i { 
+    color: $primary;
+    width: 16px;
+    text-align: center;
+  }
+  
+  // Otimizado: Mantido o seletor, mas adicionada uma garantia estrutural de alinhamento
+  span:first-of-type {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 16px;
+  }
+}
+
+.tag-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color); // Linha sutil para separar as estatísticas das ações do card
+}

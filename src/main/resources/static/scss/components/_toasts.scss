@@ -1,0 +1,115 @@
+// ========================================
+// TOAST NOTIFICATIONS - GESTOR PRO
+// ========================================
+
+@use 'sass:color';
+// Se necessário no seu fluxo, descomente as importações:
+@use '../abstracts/variables' as *; // Linha 7
+@use '../abstracts/mixins' as *;
+
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: $z-index-toast;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none; // Permite clicar nos elementos que estão atrás do container invisível
+}
+
+.toast {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  pointer-events: auto; // Restaura os cliques para os botões internos do toast
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+  }
+  
+  // ===== LOOP DE ESTADOS CUSTOMIZADOS =====
+  @each $type, $color in (success: $success, error: $danger, warning: $warning, info: $info) {
+    &.toast-#{$type}::before { background: $color; }
+    &.toast-#{$type} .toast-icon {
+      // Corrigido: Substituído rgba() antigo por color.change para zerar os warnings do terminal
+      background: color.change($color, $alpha: 0.1);
+      color: $color;
+    }
+    &.toast-#{$type} .toast-progress { color: $color; }
+  }
+  
+  &.removing {
+    animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
+
+.toast-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  @include flex-center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: $font-size-md;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: $font-size-base;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: var(--transition);
+  font-size: 16px;
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+// ===== BARRA DE TEMPO (PROGRESS) =====
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; // Ajustado: Força a barra a começar cheia antes de encolher
+  height: 3px;
+  background: currentColor;
+  opacity: 0.3;
+  animation: shrink 5s linear forwards;
+}

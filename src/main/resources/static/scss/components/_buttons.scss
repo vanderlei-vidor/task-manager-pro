@@ -1,0 +1,138 @@
+// ========================================
+// BOTÕES PREMIUM - GESTOR PRO
+// ========================================
+@use '../abstracts/variables' as *; // Linha 1: Dá acesso a cores, paddings e fontes
+@use '../abstracts/mixins' as *;
+@use 'sass:color';
+// Se necessário, descomente as linhas abaixo para o seu fluxo:
+// @use 'abstracts/variables' as *;
+// @use 'abstracts/mixins' as *;
+
+// ===== BOTÃO PRIMÁRIO =====
+.btn-primary-premium {
+  @include button-base;
+  @include gradient-primary;
+  color: #ffffff;
+  // Corrigido: Usando color.change para sumir com os warnings das sombras
+  box-shadow: 0 4px 12px color.change($primary, $alpha: 0.3);
+  
+  &:hover {
+    box-shadow: 0 8px 20px color.change($primary, $alpha: 0.4);
+  }
+}
+
+// ===== BOTÃO OUTLINE =====
+.btn-outline-premium {
+  @include button-base;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    border-color: $primary;
+    color: $primary;
+  }
+}
+
+// ===== BOTÕES DE AÇÃO =====
+.btn-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  @include flex-center;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  &.btn-success:hover {
+    background: $success;
+    color: #ffffff;
+    border-color: $success;
+  }
+  
+  &.btn-primary:hover {
+    background: $primary;
+    color: #ffffff;
+    border-color: $primary;
+  }
+  
+  &.btn-danger:hover {
+    background: $danger;
+    color: #ffffff;
+    border-color: $danger;
+  }
+}
+
+.btn-action-sm {
+  @extend .btn-action;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 13px;
+  
+  &:hover {
+    // Corrigido: Combinado o translateY herdado com o scale para não quebrar a animação
+    transform: translateY(-2px) scale(1.1);
+  }
+}
+
+// ===== BOTÕES DE NAVEGAÇÃO =====
+.btn-nav {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  @include flex-center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 18px;
+  box-shadow: var(--shadow-sm);
+  
+  &:hover {
+    background: $primary;
+    color: #ffffff;
+    border-color: $primary;
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// ===== BOTÃO DE AJUDA =====
+.btn-help {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: $primary;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  // Corrigido: Removido o warning do rgba antigo aqui também
+  box-shadow: 0 4px 12px color.change($primary, $alpha: 0.4);
+  @include flex-center;
+  font-size: 18px;
+  transition: var(--transition);
+  z-index: 999;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px color.change($primary, $alpha: 0.5);
+  }
+}

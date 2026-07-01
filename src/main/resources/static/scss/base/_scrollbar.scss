@@ -1,0 +1,33 @@
+// ========================================
+// SCROLLBAR CUSTOMIZADA (GLOBAL)
+// ========================================
+
+// ===== Padrão Moderno (Firefox e Navegadores Atuais) =====
+html {
+  scrollbar-width: thin; // Deixa a barra fina
+  scrollbar-color: var(--border-color) transparent; // Cor do bloco e cor do fundo
+}
+
+// ===== Padrão Webkit (Chrome, Edge, Safari e Opera) =====
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  // Adiciona uma borda transparente para simular um espaçamento elegante
+  border: 2px solid transparent; 
+  background-clip: padding-box;
+  border-radius: 10px;
+  transition: background var(--transition); // Se a sua variável de transição estiver disponível globalmente
+  
+  &:hover {
+    background: var(--text-tertiary);
+    background-clip: padding-box; // Mantém o espaçamento no hover
+  }
+}

@@ -1,0 +1,53 @@
+// ========================================
+// ATALHOS DE TECLADO - GESTOR PRO
+// ========================================
+
+// Se necessário no seu fluxo, descomente as importações:
+ @use '../abstracts/variables' as *;
+ @use '../abstracts/mixins' as *;
+
+.keyboard-shortcut {
+  position: fixed;
+  bottom: 16px; // Um pouco mais baixo por padrão para dar espaço para o efeito de subida
+  left: 50%;
+  // Mantém centralizado horizontalmente no estado oculto
+  transform: translateX(-50%) translateY(10px); 
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 12px 20px;
+  box-shadow: var(--shadow-xl);
+  @include flex-center;
+  gap: 16px;
+  z-index: 1500; // Ajustado: Acima da sidebar (1000) e abaixo do modal (2000) para evitar conflitos
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+    // Corrigido: Mantém o translateX para não desalinhado e remove o translateY para fazer o efeito de subida suave
+    transform: translateX(-50%) translateY(0); 
+  }
+}
+
+.shortcut-key {
+  @include flex-center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'SF Mono', Monaco, monospace;
+  box-shadow: 0 2px 0 var(--border-color); // Dica de UI: Dá um efeito 3D sutil na tecla, parecendo um botão real
+}
+
+.shortcut-label {
+  font-size: $font-size-base;
+  color: var(--text-secondary);
+}

@@ -1,0 +1,204 @@
+// ========================================
+// CARDS PREMIUM - GESTOR PRO
+// ========================================
+@use '../abstracts/variables' as *; // Linha 1: Carrega as variáveis de cores e bordas
+@use '../abstracts/mixins' as *;
+@use 'sass:color';
+// Se necessário, descomente as importações:
+// @use 'abstracts/variables' as *;
+// @use 'abstracts/mixins' as *;
+
+// ===== CARD BASE =====
+.card-premium {
+  @include card-base;
+  padding: 24px;
+}
+
+// ===== STAT CARDS =====
+.stat-card {
+  @include card-base; // Adicionado: Garante que o card de estatística herde o fundo, bordas e sombras base
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    @include gradient-primary;
+  }
+  
+  &.blue::before {
+    background: linear-gradient(90deg, #3b82f6 0%, color.adjust(#3b82f6, $lightness: -10%) 100%);
+  }
+  &.yellow::before {
+    background: linear-gradient(90deg, #f59e0b 0%, color.adjust(#f59e0b, $lightness: -10%) 100%);
+  }
+  &.cyan::before {
+    background: linear-gradient(90deg, #06b6d4 0%, color.adjust(#06b6d4, $lightness: -10%) 100%);
+  }
+  &.green::before {
+    background: linear-gradient(90deg, #10b981 0%, color.adjust(#10b981, $lightness: -10%) 100%);
+  }
+  &.red::before {
+    background: linear-gradient(90deg, #ef4444 0%, color.adjust(#ef4444, $lightness: -10%) 100%);
+  }
+  &.purple::before {
+    background: linear-gradient(90deg, #8b5cf6 0%, color.adjust(#8b5cf6, $lightness: -10%) 100%);
+  }
+}
+
+.stat-header {
+  @include flex-between;
+  margin-bottom: 16px;
+}
+
+.stat-label {
+  font-size: $font-size-base;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  @include flex-center;
+  font-size: 20px;
+  
+  // Corrigido: Trocado rgba() antigo por color.change() para limpar os warnings do terminal
+  &.blue {
+    background: color.change(#3b82f6, $alpha: 0.1);
+    color: #3b82f6;
+  }
+  &.yellow {
+    background: color.change(#f59e0b, $alpha: 0.1);
+    color: #f59e0b;
+  }
+  &.cyan {
+    background: color.change(#06b6d4, $alpha: 0.1);
+    color: #06b6d4;
+  }
+  &.green {
+    background: color.change(#10b981, $alpha: 0.1);
+    color: #10b981;
+  }
+  &.red {
+    background: color.change(#ef4444, $alpha: 0.1);
+    color: #ef4444;
+  }
+  &.purple {
+    background: color.change(#8b5cf6, $alpha: 0.1);
+    color: #8b5cf6;
+  }
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+
+.stat-change {
+  font-size: $font-size-sm;
+  color: var(--text-tertiary);
+  @include flex-center;
+  gap: 4px;
+}
+
+// ===== PROGRESS CARD =====
+.progress-card {
+  @include gradient-primary;
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  color: #ffffff;
+  // Corrigido: Removido o warning da sombra da variável aqui também
+  box-shadow: 0 10px 30px color.change($primary, $alpha: 0.3);
+  @include slide-in-up;
+}
+
+.progress-info {
+  @include flex-between;
+  margin-bottom: 20px;
+}
+
+.progress-title {
+  font-size: $font-size-lg;
+  font-weight: 600;
+  margin-bottom: 4px;
+  @include flex-center;
+}
+
+.progress-subtitle {
+  font-size: $font-size-base;
+  opacity: 0.9;
+}
+
+.progress-percentage {
+  @include flex-center;
+  align-items: baseline;
+}
+
+.percentage-value {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: countUp 1s ease-out;
+}
+
+.percentage-symbol {
+  font-size: 24px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.progress-bar-wrapper {
+  // Nota: Aqui o rgba(255, 255, 255, 0.2) com números puros está correto e não gera warning!
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, #ffffff 0%, #e0e7ff 100%);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+}
+
+.progress-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  @include flex-center;
+  gap: 8px;
+  font-size: $font-size-md;
+  
+  i {
+    font-size: 16px;
+  }
+}

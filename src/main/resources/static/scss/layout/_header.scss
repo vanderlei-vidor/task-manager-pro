@@ -1,0 +1,138 @@
+// ========================================
+// TOP HEADER E ESTRUTURA GLOBAL - GESTOR PRO
+// ========================================
+
+// Se necessário no seu fluxo, descomente as importações:
+// @use 'abstracts/variables' as *;
+// @use 'abstracts/mixins' as *;
+// src/main/resources/static/scss/layout/_header.scss
+
+@use '../abstracts/variables' as *; // Linha 1 (já está aí)
+@use '../abstracts/mixins' as *; // <-- ADICIONE ESSA LINHA NA LINHA 2!
+
+
+
+
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  padding: 16px 32px;
+  @include flex-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--border-color);
+
+  // Efeito premium de vidro fosco (glassmorphism)
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); // Suporte adicional para Safari antigo
+
+  // Corrigido: Agora o fundo mistura a cor do tema atual (claro/escuro) com 80% de opacidade,
+  // impedindo que o header fique branco e estoure os olhos no Dark Mode!
+  background: color-mix(in srgb, var(--bg-primary) 80%, transparent);
+}
+
+.header-left {
+  @include flex-center;
+  gap: 16px;
+  flex: 1;
+}
+
+.btn-menu-mobile {
+  display: none; // Controlado via media query no seu arquivo de responsividade
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: var(--transition);
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+}
+
+// ===== SEARCH BOX =====
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+
+  i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    font-size: 16px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 16px 10px 44px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    font-size: $font-size-md;
+    transition: var(--transition);
+    font-family: inherit;
+    @include focus-ring;
+
+    &:focus {
+      background: var(--bg-primary);
+    }
+  }
+}
+
+// ===== HEADER RIGHT =====
+.header-right {
+  @include flex-center;
+  gap: 12px;
+}
+
+.btn-icon {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  @include flex-center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: var(--transition);
+
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+  }
+}
+
+.badge-notification {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: $danger;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 2px solid var(--bg-primary); // Cria um "recorte" limpo em volta do número do alerta
+}
+
+// ===== MAIN CONTENT =====
+// Dica: Se puder, mova essas duas classes para um arquivo de layout separado no futuro!
+.main-content {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  transition: var(--transition-slow);
+}
+
+.content-wrapper {
+  padding: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+}

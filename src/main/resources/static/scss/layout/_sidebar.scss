@@ -1,0 +1,163 @@
+// ========================================
+// SIDEBAR PREMIUM - GESTOR PRO
+// ========================================
+@use 'sass:color';
+
+// 🔍 IMPORTAÇÃO DIRETA (Garante que o Sass encontre o $primary e os @mixins)
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  z-index: $z-index-sidebar;
+  transition: var(--transition-slow);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  
+  
+  &-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  &-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+    @include custom-scrollbar(6px, rgba(255, 255, 255, 0.1));
+  }
+  
+  &-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    @include flex-between;
+    gap: 12px;
+  }
+}
+
+.logo {
+  @include flex-center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  
+  i {
+    font-size: 28px;
+    color: $primary;
+    // Corrigido: Removido warning do rgba antigo
+    background: color.change($primary, $alpha: 0.1);
+    padding: 8px;
+    border-radius: 8px;
+  }
+}
+
+.nav-item {
+  @include flex-center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  font-size: $font-size-md;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  
+  &:hover {
+    background: var(--sidebar-hover);
+    color: #ffffff;
+    transform: translateX(2px); // Microinteração elegante de avanço
+  }
+  
+  &.active {
+    background: var(--sidebar-active);
+    color: #ffffff;
+    // Corrigido: Removido warning do rgba na sombra do botão ativo
+    box-shadow: 0 4px 12px color.change($primary, $alpha: 0.3);
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0; // Ajustado: Fixado na quina esquerda interna para um visual alinhado e simétrico
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px; // Um pouco mais visível
+      height: 20px;
+      background: #ffffff;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+  
+  i {
+    font-size: 18px;
+    width: 20px;
+  }
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 16px 0;
+}
+
+.user-info {
+  @include flex-center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  @include gradient-primary;
+  color: #ffffff;
+  @include flex-center;
+  font-weight: 600;
+  font-size: $font-size-md;
+  flex-shrink: 0;
+}
+
+.user-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.user-name {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: #ffffff;
+  @include text-truncate; // Evita que nomes longos quebrem a estrutura do footer
+}
+
+.user-role {
+  font-size: $font-size-xs;
+  color: var(--text-tertiary);
+}
+
+.btn-logout {
+  background: transparent;
+  border: none;
+  color: var(--sidebar-text);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  
+  &:hover {
+    background: var(--sidebar-hover);
+    color: #ffffff;
+  }
+}

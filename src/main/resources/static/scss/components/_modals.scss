@@ -1,0 +1,105 @@
+// ========================================
+// MODAIS PREMIUM - GESTOR PRO
+// ========================================
+
+// Se necessário no seu fluxo, descomente as importações:
+// @use 'abstracts/variables' as *;
+@use '../abstracts/variables' as *; // Garanta que tem o ../
+@use '../abstracts/mixins' as *;
+
+.modal-premium {
+  border: none;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-xl);
+  background: var(--bg-primary); // Garante o fundo padrão do modal
+  // Ajustado: Removido o overflow: hidden para evitar que dropdowns internos sejam cortados!
+}
+
+// ===== Suporte Nativo para a tag <dialog> =====
+dialog.modal-premium {
+  padding: 0; // Remove paddings nativos do browser
+
+  &::backdrop {
+    background: rgba(15, 23, 42, 0.3); // Escurece o fundo usando o Slate-900 com opacidade suave
+    backdrop-filter: blur(4px); // Efeito premium de vidro borrado no fundo do app!
+  }
+}
+
+.modal-header-premium {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  border-top-left-radius: var(--border-radius-lg); // Garante o arredondamento no topo
+  border-top-right-radius: var(--border-radius-lg);
+  @include flex-between;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-body {
+  padding: 24px; // Adicionado para manter o espaçamento padrão do corpo do modal
+  background: var(--bg-primary);
+  color: var(--text-primary);
+
+  // Garantir que inputs do modal funcionem
+  input,
+  textarea,
+  select {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto !important;
+    @include focus-ring;
+  }
+}
+
+.modal-footer-premium {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border-bottom-left-radius: var(--border-radius-lg); // Garante o arredondamento na base
+  border-bottom-right-radius: var(--border-radius-lg);
+}
+
+// ===== TASK DETAIL ROW =====
+.task-detail-row {
+  @include flex-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.detail-label {
+  @include flex-center;
+  gap: 8px;
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: var(--text-secondary);
+
+  i {
+    font-size: 16px;
+    color: $primary;
+  }
+}
+
+.detail-value {
+  font-size: $font-size-md;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.detail-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}

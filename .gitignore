@@ -33,3 +33,16 @@ Thumbs.db
 
 # Spring Boot
 HELP.md
+
+# ========================================
+# Node / Frontend Bundlers (Vite)
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# (Opcional, mas recomendado) Ignora a pasta gerada pelo build do Vite,
+# já que o servidor de produção/CI-CD vai rodar o 'npm run build' sozinho.
+src/main/resources/static/dist/

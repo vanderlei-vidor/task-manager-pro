@@ -1,0 +1,173 @@
+// ========================================
+// ANIMAÇÕES GLOBAIS
+// ========================================
+
+@use 'sass:color'; // <-- ADICIONE ESSA LINHA NA LINHA 1!
+
+// Se o seu arquivo de animações também usar variáveis como $danger direto, 
+// garanta que ele conheça o arquivo de variáveis, deixando o topo assim:
+@use 'variables' as *;
+
+// DICA: Se as variáveis derem erro de "Undefined variable", descomente a linha abaixo mudando para o seu caminho real:
+// @use 'variaveis' as *; 
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    // Corrigido: Usando color.change para evitar warnings do rgba antigo
+    box-shadow: 0 0 0 0 color.change($danger, $alpha: 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color.change($danger, $alpha: 0);
+  }
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color.change($danger, $alpha: 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color.change($danger, $alpha: 0);
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color.change($danger, $alpha: 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color.change($danger, $alpha: 0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    border-left-color: $warning;
+  }
+  50% {
+    border-left-color: color.adjust($warning, $lightness: 10%);
+    box-shadow: 0 0 12px color.change($warning, $alpha: 0.3);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Dica: 'fadeInUp' faz exatamente a mesma coisa que a sua 'slideInUp' ali de cima.
+// Você pode manter as duas se usar em lugares diferentes, sem problemas!
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dragPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color.change($primary, $alpha: 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color.change($primary, $alpha: 0);
+  }
+}
+
+@keyframes shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+// ===== CLASSES UTILITÁRIAS =====
+.fade-in { animation: fadeIn 0.3s ease-out; }
+.slide-in-up { animation: slideInUp 0.4s ease-out; }

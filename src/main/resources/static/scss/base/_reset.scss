@@ -1,0 +1,68 @@
+// ========================================
+// RESET CSS E TIPOGRAFIA BASE
+// ========================================
+
+// Se necessário no seu fluxo moderno, descomente a linha abaixo:
+// @use 'abstracts/variables' as *;
+@use 'sass:color' as color;
+// Em vez de apontar para a pasta, aponta direto para o arquivo que tem a fonte:
+@use '../abstracts/variables' as *;
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-family;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // Ajustado: Transição aplicada de forma segura apenas no container pai
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+
+// ===== IMAGENS =====
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// ===== LISTAS =====
+ul,
+ol {
+  list-style: none;
+}
+
+// ===== FORMULÁRIOS =====
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+// ===== TABELAS =====
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}

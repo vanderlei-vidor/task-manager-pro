@@ -1,0 +1,141 @@
+// ========================================
+// BADGES E TAGS - GESTOR PRO
+// ========================================
+
+@use 'sass:color';
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+// Se der erro de variáveis não definidas, lembre-se de puxar o arquivo de tokens:
+// @use 'abstracts/variables' as *;
+// @use 'abstracts/mixins' as *; // Necessário para o @include flex-center
+
+// ===== BADGES DE STATUS =====
+.badge-status,
+.badge-priority {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: color.change($success, $alpha: 0.1); // Corrigido para o padrão moderno
+  color: $success;
+}
+
+.badge-info {
+  background: color.change($cyan, $alpha: 0.1);
+  color: color.adjust($cyan, $lightness: -10%);
+}
+
+.badge-warning {
+  background: color.change($warning, $alpha: 0.1);
+  color: color.adjust($warning, $lightness: -10%);
+}
+
+// ===== BADGES DE PRIORIDADE =====
+.priority-high {
+  background: color.change($danger, $alpha: 0.1);
+  color: $danger;
+}
+
+.priority-medium {
+  background: color.change($purple, $alpha: 0.1);
+  color: $purple;
+}
+
+.priority-low {
+  background: color.change($success, $alpha: 0.1);
+  color: $success;
+}
+
+// ===== BADGES SMALL =====
+.badge-status-sm {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  
+  // Corrigido: Agora usando color.change para sumir com os warnings aqui dentro também
+  &.badge-success { background: color.change($success, $alpha: 0.1); color: $success; }
+  &.badge-info { background: color.change($cyan, $alpha: 0.1); color: color.adjust($cyan, $lightness: -10%); }
+  &.badge-warning { background: color.change($warning, $alpha: 0.1); color: color.adjust($warning, $lightness: -10%); }
+}
+
+// ===== TAGS =====
+.badge-tag,
+.badge-tag-sm {
+  @include flex-center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  color: #ffffff;
+  background: var(--text-secondary); // Adicionado: Fallback caso a tag não receba uma cor dinâmica
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.badge-tag-sm {
+  padding: 2px 8px;
+  font-size: $font-size-xs;
+}
+
+.task-tags,
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-item {
+  @include flex-center;
+  gap: 4px;
+}
+
+.tag-delete {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: var(--transition);
+  
+  &:hover {
+    background: color.change($danger, $alpha: 0.1);
+    color: $danger;
+  }
+}
+
+// ===== DEADLINE BADGE =====
+.deadline-badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 4px;
+  animation: fadeIn 0.3s ease-out;
+  letter-spacing: 0.02em;
+  
+  &.overdue {
+    background: color.change($danger, $alpha: 0.1);
+    color: $danger;
+  }
+  
+  &.today {
+    background: color.change($warning, $alpha: 0.1);
+    color: color.adjust($warning, $lightness: -10%);
+  }
+}
+
+.column-count {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,0 +1,134 @@
+// ========================================
+// MODO ESCURO - GESTOR PRO
+// ========================================
+@use 'sass:color';
+@use '../abstracts' as *;
+// Se necessário no seu fluxo, descomente as importações:
+// @use 'abstracts/variables' as *;
+// @use 'abstracts/mixins' as *;
+
+body.dark-mode {
+  // ===== VARIÁVEIS SLATE OTIMIZADAS =====
+  --bg-primary: #0f172a;      // Camada de fundo da página
+  --bg-secondary: #1e293b;    // Camada dos cards, modais e colunas
+  --bg-tertiary: #334155;     // Camada de inputs, tabelas e hovers
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-color: #334155;
+  
+  // ===== COMPONENTES DE TOPO =====
+  .top-header {
+    background: color.change(#0f172a, $alpha: 0.85); // Atualizado para usar sintaxe limpa
+    backdrop-filter: blur(12px);
+  }
+  
+  .search-box input {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+  
+  .table-premium thead th {
+    background: var(--bg-tertiary);
+  }
+  
+  // Ajustado: Cards e Modais herdam bg-secondary para saltarem aos olhos do usuário sobre o bg-primary do body
+  .card-premium,
+  .modal-premium,
+  .modal-body {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+  
+  .modal-footer-premium {
+    background: var(--bg-tertiary);
+  }
+  
+  .form-control-premium {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    
+    &:focus {
+      background: var(--bg-primary);
+      border-color: $primary;
+    }
+  }
+  
+  // ===== CALENDÁRIO =====
+  .calendar-day {
+    background: var(--bg-primary);
+    
+    &:hover {
+      background: var(--bg-secondary);
+    }
+    
+    &.empty-day { 
+      background: var(--bg-tertiary); 
+      opacity: 0.15; // Reduzido para dar mais profundidade e foco nos dias válidos
+    }
+  }
+  
+  .calendar-task {
+    background: var(--bg-secondary);
+  }
+  
+  // ===== KANBAN & VIEWS DE TAREFAS =====
+  .kanban-column {
+    background: var(--bg-secondary);
+  }
+
+  .column-header {
+    background: var(--bg-tertiary);
+  }
+
+  // Corrigido: Cards de tarefas ganham bg-primary para criar contraste nítido sobre o fundo da coluna!
+  .task-card,
+  .week-task-card,
+  .day-task-item {
+    background: var(--bg-primary);
+    
+    &:hover {
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.4); // Sombra levemente aumentada para destacar no escuro
+    }
+  }
+  
+  .week-day-column {
+    background: var(--bg-secondary);
+  }
+  
+  .week-day-header {
+    background: var(--bg-tertiary);
+  }
+  
+  .progress-bar-fill {
+    background: linear-gradient(90deg, $purple 0%, #ec4899 100%);
+    box-shadow: 0 0 20px color.change($purple, $alpha: 0.5); // Corrigido warning do rgba
+  }
+  
+  // ===== SIDEBAR =====
+  .sidebar {
+    background: #020617; // Azul ultra-profundo mantém a elegância corporativa premium
+  }
+  
+  .progress-card {
+    @include gradient-primary;
+  }
+}
+
+// ===== TRANSIÇÃO SUAVE DE TEMA (PERFORMÁTICA) =====
+// Otimizado: Removido o seletor genérico '*' para evitar travamentos de rendering no navegador.
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Passamos o efeito de transição apenas para os containers de bloco principais
+.sidebar,
+.top-header,
+.card-premium,
+.kanban-column,
+.task-card,
+.calendar-day,
+.form-control-premium {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}

@@ -1,0 +1,310 @@
+// ========================================
+// KANBAN BOARD - GESTOR PRO
+// ========================================
+
+@use 'sass:color';
+// Se necessário no seu fluxo, descomente as importações:
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.kanban-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  @include slide-in-up;
+  margin-bottom: 24px; // Adicionado para dar um distanciamento saudável até os filtros
+}
+
+.kanban-actions {
+  display: flex;
+  gap: 12px;
+}
+
+// ===== QUICK FILTERS =====
+.quick-filters {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px 20px;
+  @include flex-center;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: slideInUp 0.6s ease-out;
+  margin-bottom: 24px; // Adicionado para separar o bloco de filtros do board em si
+}
+
+.filter-label {
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: var(--text-secondary);
+  @include flex-center;
+  gap: 6px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filter-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: $font-size-base;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &.active {
+    background: $primary;
+    color: #ffffff;
+    border-color: $primary;
+    box-shadow: 0 4px 16px color.change($primary, $alpha: 0.4); // Corrigido: Removido warning do rgba
+    transform: scale(1.05);
+  }
+}
+
+// ===== KANBAN BOARD =====
+.kanban-board {
+  display: grid;
+  // Corrigido: minmax automático impede que as colunas fiquem espremidas em telas menores!
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  min-height: 600px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.kanban-column {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  
+  @for $i from 1 through 3 {
+    &:nth-child(#{$i}) { animation-delay: #{$i * 0.1}s; }
+  }
+  
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.column-header {
+  padding: 16px 20px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  @include flex-between;
+}
+
+.column-title {
+  @include flex-center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: $font-size-md;
+  color: var(--text-primary);
+}
+
+.column-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  @include flex-center;
+  color: #ffffff;
+  font-size: $font-size-md;
+}
+
+.column-todo .column-icon { background: $warning; }
+.column-doing .column-icon { background: $cyan; }
+.column-done .column-icon { background: $success; }
+
+.column-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 400px;
+  @include custom-scrollbar(6px);
+}
+
+// ===== TASK CARDS =====
+.task-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  position: relative;
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) { animation-delay: #{$i * 0.05}s; }
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, color.change($primary, $alpha: 0.05) 0%, color.change($purple, $alpha: 0.05) 100%); // Corrigido: Removido warning de rgba
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    border-color: $primary;
+    
+    &::before { opacity: 1; }
+    
+    .card-actions {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  &:active {
+    transform: translateY(-2px);
+    transition: transform 0.1s ease;
+  }
+  
+  &.card-overdue {
+    border-left: 3px solid $danger !important;
+    background: color.change($danger, $alpha: 0.02) !important; // Corrigido: Removido warning do rgba
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  &.card-due-today {
+    border-left: 3px solid $warning !important;
+    background: color.change($warning, $alpha: 0.02) !important; // Corrigido: Removido warning do rgba
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  &.card-completed {
+    opacity: 0.7;
+    
+    &:hover { opacity: 1; }
+  }
+}
+
+.card-priority-indicator {
+  @include priority-indicator(currentColor);
+  
+  &.priority-high { background: $danger; }
+  &.priority-medium { background: $purple; }
+  &.priority-low { background: $success; }
+}
+
+.card-content {
+  flex: 1;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: $font-size-md;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.4;
+  
+  &.task-done {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+  }
+}
+
+.card-description {
+  font-size: $font-size-base;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  @include line-clamp(2);
+  line-height: 1.4;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.card-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.card-footer {
+  @include flex-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+.card-deadline {
+  @include flex-center;
+  gap: 4px;
+  font-size: $font-size-sm;
+  color: var(--text-secondary);
+  
+  i { font-size: $font-size-sm; }
+  
+  &.completed { color: $success; }
+}
+
+.card-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  @include flex-center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  text-decoration: none;
+  
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: $primary;
+    color: #ffffff;
+    border-color: $primary;
+  }
+  
+  &.btn-complete:hover { background: $success; border-color: $success; }
+  &.btn-move:hover { background: $cyan; border-color: $cyan; }
+  &.btn-move-back:hover { background: $warning; border-color: $warning; }
+  &.btn-delete:hover { background: $danger; border-color: $danger; }
+}

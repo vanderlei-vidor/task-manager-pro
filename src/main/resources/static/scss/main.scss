@@ -1,0 +1,35 @@
+// ========================================
+// GESTOR PRO - PREMIUM DESIGN SYSTEM
+// Indexador Central de Módulos (main.scss)
+// ========================================
+
+// ===== 1. BASE =====
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/scrollbar';
+
+// ===== 2. LAYOUT (Estrutura Principal) =====
+@use 'layout/sidebar';
+@use 'layout/header';
+
+// ===== 3. COMPONENTS (Elemento Reutilizáveis) =====
+@use 'components/buttons';
+@use 'components/cards';
+@use 'components/tables';
+@use 'components/badges';
+@use 'components/forms';
+@use 'components/modals';
+@use 'components/toasts';
+@use 'components/empty-states';
+@use 'components/keyboard-shortcuts';
+
+// ===== 4. PAGES (Estilos Específicos) =====
+@use 'pages/dashboard';
+@use 'pages/kanban';
+@use 'pages/calendar';
+@use 'pages/tags';
+@use 'pages/profile';
+@use 'pages/reports';
+
+// ===== 5. THEMES (Modo Escuro) =====
+@use 'themes/dark-mode';

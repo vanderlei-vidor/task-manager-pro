@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Task;
 import com.example.demo.model.Usuario;
+import com.example.demo.repository.TaskRepository; // 🚀 Injetado
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.ExcelService;
 import com.example.demo.service.PdfService;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ExportController {
 
     private final UsuarioRepository usuarioRepository;
+    private final TaskRepository taskRepository; // 🚀 Adicionado o repositório de tarefas
     private final PdfService pdfService;
     private final ExcelService excelService;
 
@@ -29,10 +31,12 @@ public class ExportController {
     public void exportarParaPdf(
             HttpServletResponse response,
             @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        
         Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        List<Task> tarefas = usuario.getTarefas();
+        // 🔥 CORREÇÃO: Busca direto do repositório trazendo as tags e evitando o Lazy Error
+        List<Task> tarefas = taskRepository.findByUsuarioIdWithTags(usuario.getId());
 
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=tarefas.pdf");
@@ -43,10 +47,12 @@ public class ExportController {
     public void exportarParaExcel(
             HttpServletResponse response,
             @AuthenticationPrincipal UserDetails userDetails) throws IOException {
+        
         Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        List<Task> tarefas = usuario.getTarefas();
+        // 🔥 CORREÇÃO: Mesmo ajuste aqui para blindar o download do Excel
+        List<Task> tarefas = taskRepository.findByUsuarioIdWithTags(usuario.getId());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=tarefas.xlsx");
