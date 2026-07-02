@@ -1537,7 +1537,8 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📈 Reports (Dark)</strong><br/>
 <em>Analytics in dark mode</em><br/>
-<a href="screenshots/reports-dark.webp" alt="Reports Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
+<a href="screenshots/reports-dark.webp" target="_blank">
+<img src="screenshots/reports-dark.webp" alt="Reports Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
 </a>
 </td>
 </tr>
@@ -1566,74 +1567,6 @@ See the application in action. Click on any image to view it in full size.
 </div>
 
 <br/>
-
----
-
-## 📷 How to Capture Your Own Screenshots
-
-Since this is a template, you'll need to capture your own screenshots. Here's how:
-
-### 🛠️ Recommended Tools
-
-**For Screenshots:**
-- **Windows**: Snipping Tool (built-in) or [ShareX](https://getsharex.com/)
-- **Mac**: Cmd+Shift+4 or [CleanShot X](https://cleanshot.com/)
-- **Browser**: [Nimbus Screenshot](https://nimbusweb.me/screenshot.php) (Chrome extension)
-
-**For GIFs:**
-- **Windows**: [ScreenToGif](https://www.screentogif.com/) (free, open-source)
-- **Mac**: [LICEcap](https://www.cockos.com/licecap/) (free) or [Kap](https://getkap.co/)
-- **Cross-platform**: [Peek](https://github.com/phw/peek) (Linux)
-
-### 📐 Best Practices
-
-1. **Resolution**: Capture at 1920x1080 or higher
-2. **Browser**: Use Chrome/Firefox with DevTools closed
-3. **Content**: Fill with realistic data (not empty states)
-4. **Dark Mode**: Capture both light and dark versions
-5. **Compression**: Use [TinyPNG](https://tinypng.com/) to reduce file size
-6. **Naming**: Use consistent names like `dashboard-light.png`, `kanban-dark.png`
-
-### 📁 Folder Structure
-
-Create this folder in your repository:
-
-```
-screenshots/
-├── dashboard-light.png
-├── dashboard-dark.png
-├── kanban-light.png
-├── kanban-dark.png
-├── calendar-month-light.png
-├── calendar-week-light.png
-├── calendar-dark.png
-├── reports-light.png
-├── reports-dark.png
-├── tags-light.png
-├── kanban-demo.gif
-└── theme-switch.gif
-```
-
-### 💡 Pro Tips
-
-- ✅ **Show real data** — empty states look unprofessional
-- ✅ **Highlight features** — use annotations to point out key features
-- ✅ **Show animations** — GIFs are more engaging than static images
-- ✅ **Mobile views** — consider adding mobile screenshots
-- ✅ **Keep it updated** — update screenshots when UI changes
-
-<br/>
-
-<div align="center">
-
-> 💡 *"A picture is worth a thousand words — but a GIF is worth a thousand pictures."*
-
-</div>
-
-<br/>
-
-<p align="right"><a href="#top">↑ Back to top</a></p>
-
 
 ---
 
