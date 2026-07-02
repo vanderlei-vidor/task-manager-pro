@@ -1682,7 +1682,7 @@ docker --version        # Should show 20+ (optional)
 ### 📥 Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/task-manager-pro.git
+git clone https://github.com/vanderlei-vidor/task-manager-pro.git
 cd task-manager-pro
 ```
 
@@ -1943,7 +1943,7 @@ For the **impatient developer** (copy-paste ready):
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_USERNAME/task-manager-pro.git
+git clone https://github.com/vanderlei-vidor/task-manager-pro.git
 cd task-manager-pro
 
 # 2. Configure
@@ -3303,7 +3303,7 @@ Thank you for being part of this journey.
 
 <br/>
 
-<sub>Built with ❤️ and ☕ by <strong>Seu Nome</strong></sub>
+<sub>Built with ❤️ and ☕ by <strong>Vanderlei Vidor</strong></sub>
 
 <br/>
 

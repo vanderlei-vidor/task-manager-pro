@@ -315,9 +315,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📞 Questions?
 
-- **General questions:** Open a [Discussion](https://github.com/YOUR_USERNAME/task-manager-pro/discussions)
-- **Bug reports:** Open an [Issue](https://github.com/YOUR_USERNAME/task-manager-pro/issues)
-- **Feature requests:** Open an [Issue](https://github.com/YOUR_USERNAME/task-manager-pro/issues) with `enhancement` label
+- **General questions:** Open a [Discussion](https://github.com/vanderlei-vidor/task-manager-pro/discussions)
+- **Bug reports:** Open an [Issue](https://github.com/vanderlei-vidor/task-manager-pro/issues)
+- **Feature requests:** Open an [Issue](https://github.com/vanderlei-vidor/task-manager-pro/issues) with `enhancement` label
 
 ---
 
