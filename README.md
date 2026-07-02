@@ -1105,6 +1105,13 @@ And that's exactly how it should be.
 
 A complete task management system built with **enterprise-grade features** and **modern UX**.
 
+### 🎨 UI/UX
+
+- 🌙 **Dark Mode** — Smooth transitions
+- 📱 **Responsive** — Mobile-first design
+- ✨ **Animations** — Micro-interactions
+- 📖 **[Design System](UI_DESIGN_SYSTEM.md)** — Complete documentation
+
 <br/>
 
 <div align="center">
@@ -1445,15 +1452,15 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📊 Dashboard</strong><br/>
 <em>Real-time statistics and progress tracking</em><br/>
-<a href="screenshots/dashboard-light.png" target="_blank">
-<img src="screenshots/dashboard-light.png" alt="Dashboard Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/dashboard-light-tela.webp" target="_blank">
+<img src="screenshots/dashboard-light-tela.webp" alt="Dashboard Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 <td width="50%" align="center">
 <strong>📋 Kanban Board</strong><br/>
 <em>Visual task management with drag-and-drop</em><br/>
-<a href="screenshots/kanban-light.png" target="_blank">
-<img src="screenshots/kanban-light.png" alt="Kanban Board Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/kanban-light-tela.webp" target="_blank">
+<img src="screenshots/kanban-light-tela.webp" alt="Kanban Board Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 </tr>
