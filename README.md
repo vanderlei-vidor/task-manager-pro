@@ -1470,7 +1470,7 @@ See the application in action. Click on any image to view it in full size.
 <strong>📅 Calendar (Month View)</strong><br/>
 <em>Monthly overview with color-coded tasks</em><br/>
 <a href="screenshots/calendar-month-light.webp" target="_blank">
-<img src="screenshots/calendar-month-light.wepb" alt="Calendar Month Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<img src="screenshots/calendar-month-light.webp" alt="Calendar Month Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 <td width="50%" align="center">
