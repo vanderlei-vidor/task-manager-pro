@@ -3166,12 +3166,7 @@ When I'm not coding, you can find me:
 <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
 </a>
 <br/>
-<em>Let's connect professionally</em>
 </td>
-<td width="25%" align="center">
-<a href="mailto:vanderleividor1@gmail.com" target="_blank">
-<img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"/>
-</a>
 <br/>
 <em>Direct contact</em>
 </td>

@@ -18,9 +18,8 @@ We take security seriously. If you discover a security vulnerability, please fol
 
 **DO NOT** open a public issue. Instead:
 
-1. Email us at: **[vanderleividor1@gmail.com]**
-2. Use the subject line: `Security Vulnerability: [Brief Description]`
-3. Include:
+1. Use the subject line: `Security Vulnerability: [Brief Description]`
+2. Include:
    - Description of the vulnerability
    - Steps to reproduce
    - Potential impact

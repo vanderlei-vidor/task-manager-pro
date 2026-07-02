@@ -235,7 +235,6 @@ Update docs when:
 
 - 🐙 **GitHub**: [github.com/vanderlei-vidor/task-manager-pro](https://github.com/vanderlei-vidor/task-manager-pro)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/vanderlei-vidor/task-manager-pro/discussions)
-- 📧 **Email**: [vanderleividor1@gmail.com]
 
 ---
 
