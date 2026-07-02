@@ -1554,7 +1554,6 @@ dialog.modal-premium::backdrop {
 
 .main-content {
   margin-left: var(--sidebar-width);
-  padding-top: var(--header-height, 70px);
   width: calc(100% - var(--sidebar-width));
 }
 

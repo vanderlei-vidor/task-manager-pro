@@ -7,9 +7,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp; // ✅ NOVO IMPORT
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime; // ✅ NOVO IMPORT
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +48,13 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private Set<Tag> tags = new HashSet<>();
+
+    // ========================================
+    // 🚀 NOVO: MAPEAMENTO DOS REFRESH TOKENS PARA DELETAR EM CASCATA
+    // ========================================
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<RefreshToken> refreshTokens = new ArrayList<>(); // Altere o tipo se sua classe tiver outro nome (ex: Token)
 
     // ========================================
     // MÉTODOS HELPER

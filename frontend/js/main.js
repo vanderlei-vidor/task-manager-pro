@@ -1,59 +1,84 @@
 // ========================================
-// GESTOR PRO - ENTRY POINT
+// GESTOR PRO - ENTRY POINT (MAESTRO)
 // ========================================
 
 // Core
 import { Toast } from './core/toast.js';
-import { $, $$ } from './core/utils.js'; // 🚀 Usando exclusivamente os utilitários do core
+import { $, $$ } from './core/utils.js';
 
 // Components
 import { Theme } from './components/theme.js';
 import { Sidebar } from './components/sidebar.js';
+import { Search } from './components/search.js';
 
 // Features
 import { Kanban } from './features/kanban.js';
 import { Calendar } from './features/calendar.js';
 import { Shortcuts } from './features/shortcuts.js';
+import { Tags } from './features/tags.js';
 
-// Pages
-import { Reports } from './pages/reports.js';
+// Pages / Features de Rota
+import { Reports } from './pages/reports.js'; 
+import { Dashboard } from './pages/dashboard.js';
 
 // ========================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO DO ECOSSISTEMA
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Inicializa componentes base (Globais)
+  // 1. Inicializa componentes de layout base (Sempre ativos)
   Toast.init();
   Theme.init();
   Sidebar.init();
   Shortcuts.init();
+  Search.init();
 
-  // 2. Inicializa features específicas 
-  // 💡 Como adicionamos as linhas de defesa dentro de cada uma delas, 
-  // elas só vão rodar se os elementos correspondentes existirem na página atual!
+  // 2. Inicializa features globais baseadas em presença de elementos
   Kanban.init();
   Calendar.init();
-  Reports.init(); // 🚀 Chamado de forma limpa e autoprotegida
+  Tags.init();
 
-  // 3. Converte flash messages do Spring Boot em toasts
+  // 3. Carrega páginas específicas baseado no roteamento da URL
+  _loadPageScripts();
+
+  // 4. Captura interceptadores do backend (Flash Messages)
   _convertFlashMessages();
 
-  // 4. Animação de entrada dos cards
-  _animateCards();
+  // 5. Aplica patches de correção de Z-Index e foco nos Modais do Bootstrap
+  _fixModalInputs();
 
-  // 5. Toast de boas-vindas controlado (Apenas uma vez por sessão)
-  _showWelcomeMessage();
+  // 6. Atualiza o estado visual da Sidebar
+  _updateActiveNavItem();
 
-  console.log('🚀 Gestor Pro carregado com sucesso!');
+  // 7. 🔥 Toast de boas-vindas controlado por sessão (Aparece apenas uma vez)
+  _showWelcomeToast();
+
+  console.log('🚀 Gestor Pro inicializado e monitorado via Vite!');
 });
 
 // ========================================
-// FUNÇÕES AUXILIARES
+// FUNÇÕES AUXILIARES DE SUPORTE
 // ========================================
 
+/**
+ * Roteador lógico para acoplamento de engines de páginas específicas
+ */
+function _loadPageScripts() {
+  const path = window.location.pathname;
+
+  if (path === '/relatorios') {
+    Reports.init();
+  } else if (path === '/' || path === '/dashboard') {
+    Dashboard.init();
+  }
+}
+
+/**
+ * Converte flash messages do Spring Boot / Thymeleaf em Toasts elegantes
+ */
 function _convertFlashMessages() {
   const alertSuccess = $('.alert-success');
   const alertDanger = $('.alert-danger');
+  const alertWarning = $('.alert-warning');
 
   if (alertSuccess) {
     Toast.success('Sucesso!', alertSuccess.textContent.trim());
@@ -64,31 +89,65 @@ function _convertFlashMessages() {
     Toast.error('Erro!', alertDanger.textContent.trim());
     alertDanger.remove();
   }
-}
 
-function _animateCards() {
-  const cards = $$('.stat-card, .card-premium');
-  cards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-
-    setTimeout(() => {
-      card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, index * 50);
-  });
-}
-
-function _showWelcomeMessage() {
-  // 💡 Blinda para exibir o toast apenas na primeira página que o usuário abrir na sessão
-  if (!sessionStorage.getItem('welcomeShown')) {
-    setTimeout(() => {
-      const nomeUsuario = $('.user-name')?.textContent || 'Usuário';
-      Toast.success(`Bem-vindo, ${nomeUsuario}! 👋`, 'Pressione ? para ver os atalhos de teclado');
-      sessionStorage.setItem('welcomeShown', 'true'); // Marca que já foi exibido
-    }, 600);
+  if (alertWarning) {
+    Toast.warning('Atenção!', alertWarning.textContent.trim());
+    alertWarning.remove();
   }
 }
 
-// 💡 Removidas as funções duplicadas $(selector) e $$(selector) que estavam no final do arquivo!
+/**
+ * Corrige falhas nativas de foco e clicks de elementos sobrepostos em modais
+ */
+function _fixModalInputs() {
+  document.addEventListener('shown.bs.modal', (event) => {
+    const modal = event.target;
+
+    // Força a re-habilitação dos ponteiros de eventos nos inputs do formulário
+    const inputs = modal.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      input.style.pointerEvents = 'auto';
+      input.style.position = 'relative';
+      input.style.zIndex = '10';
+    });
+
+    // Garante que as labels customizadas de tags respondam perfeitamente ao clique
+    const tagLabels = modal.querySelectorAll('.tag-label');
+    tagLabels.forEach(label => {
+      label.style.pointerEvents = 'auto';
+      label.style.cursor = 'pointer';
+    });
+
+    console.log('🎯 Ciclo do Bootstrap Modal: Inputs re-alinhados.');
+  });
+}
+
+/**
+ * Sincroniza a classe de ativação do item da Sidebar baseado no data-attribute do HTML
+ */
+function _updateActiveNavItem() {
+  $$('.nav-item').forEach(item => item.classList.remove('active'));
+
+  const currentPage = $('[data-current-page]');
+  if (!currentPage) return;
+
+  const page = currentPage.getAttribute('data-current-page');
+  const navItem = $(`.nav-item[href="/${page}"]`);
+
+  if (navItem) {
+    navItem.classList.add('active');
+  }
+}
+
+/**
+ * Gerencia o disparo do Toast de boas-vindas usando Session Storage para evitar loops
+ */
+function _showWelcomeToast() {
+  if (sessionStorage.getItem('welcomeShown')) return;
+
+  setTimeout(() => {
+    const nomeUsuario = $('.user-name')?.textContent.trim() || 'Usuário';
+    Toast.success(`Bem-vindo, ${nomeUsuario}! 👋`, 'Pressione ? para ver os atalhos de teclado.');
+    sessionStorage.setItem('welcomeShown', 'true');
+  }, 600);
+}

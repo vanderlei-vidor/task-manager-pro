@@ -13,7 +13,7 @@
   margin-left: var(--sidebar-width); 
   
   // Se a sidebar estiver escondendo o cabeçalho, adicione também o espaço do topo:
-  padding-top: var(--header-height, 70px); 
+ // padding-top: var(--header-height, 70px); 
   
   width: calc(100% - var(--sidebar-width));
   

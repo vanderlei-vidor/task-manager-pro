@@ -19,28 +19,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+        public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+                this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/favicon.ico");
-    }
+        @Bean
+        public WebSecurityCustomizer webSecurityCustomizer() {
+                return (web) -> web.ignoring().requestMatchers("/favicon.ico");
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+                return authConfig.getAuthenticationManager();
+        }
 
-    @Bean
+        @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> {
@@ -53,7 +53,12 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.sameOrigin()) // Permite H2 Console
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ PÁGINAS PÚBLICAS
+                        // =========================================================================
+                        // 🚀 CORRIGIDO: PERMITE DESPACHOS DE ERRO INTERNOS (Usa o pacote do Jakarta)
+                        // =========================================================================
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                        
+                        // ✅ PÁGINAS PÚBLICAS E INFRAESTRUTURA
                         .requestMatchers("/").authenticated() // Dashboard requer login
                         .requestMatchers("/login", "/cadastrar", "/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
@@ -67,25 +72,40 @@ public class SecurityConfig {
 
                         // ✅ Qualquer outra rota requer autenticação
                         .anyRequest().authenticated())
+                
+                // =========================================================================
+                // 🚀 TRATAMENTO DE EXCEÇÃO PARA REST
+                // =========================================================================
+                .exceptionHandling(exception -> exception
+                        .defaultAuthenticationEntryPointFor(
+                                (request, response, authException) -> {
+                                    if (response.getStatus() < 400) {
+                                        response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                                    }
+                                },
+                                new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/auth/**")
+                        )
+                )
+
                 // ✅ CONFIGURA FORM LOGIN (para Thymeleaf)
                 .formLogin(form -> form
-                        .loginPage("/login") // Página de login customizada
-                        .loginProcessingUrl("/login") // URL que processa o login
-                        .defaultSuccessUrl("/", true) // Redireciona pro dashboard
-                        .failureUrl("/login?error=true") // Redireciona em caso de erro
-                        .usernameParameter("username") // Nome do campo de email
-                        .passwordParameter("password") // Nome do campo de senha
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error=true")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
                         .permitAll())
                 // ✅ CONFIGURA LOGOUT
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/logout-web")
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll())
                 // ✅ MANTÉM STATELESS PARA API (JWT)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Sessão só quando necessário
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 // ✅ ADICIONA FILTRO JWT
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
