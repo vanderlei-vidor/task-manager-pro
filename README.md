@@ -1469,15 +1469,15 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📅 Calendar (Month View)</strong><br/>
 <em>Monthly overview with color-coded tasks</em><br/>
-<a href="screenshots/calendar-month-light.png" target="_blank">
-<img src="screenshots/calendar-month-light.png" alt="Calendar Month Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/calendar-month-light.webp" target="_blank">
+<img src="screenshots/calendar-month-light.wepb" alt="Calendar Month Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 <td width="50%" align="center">
 <strong>📅 Calendar (Week View)</strong><br/>
 <em>Weekly planning with drag-and-drop</em><br/>
-<a href="screenshots/calendar-week-light.png" target="_blank">
-<img src="screenshots/calendar-week-light.png" alt="Calendar Week Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/calendar-week-light.webp" target="_blank">
+<img src="screenshots/calendar-week-light.webp" alt="Calendar Week Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 </tr>
@@ -1486,15 +1486,15 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📈 Reports & Analytics</strong><br/>
 <em>Charts, heatmaps, and data visualization</em><br/>
-<a href="screenshots/reports-light.png" target="_blank">
-<img src="screenshots/reports-light.png" alt="Reports Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/reports-month-light.webp" target="_blank">
+<img src="screenshots/reports-month-light.webp" alt="Reports Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 <td width="50%" align="center">
 <strong>🏷️ Tag Management</strong><br/>
 <em>Organize tasks with custom tags</em><br/>
-<a href="screenshots/tags-light.png" target="_blank">
-<img src="screenshots/tags-light.png" alt="Tags Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+<a href="screenshots/tags-light.webp" target="_blank">
+<img src="screenshots/tags-light.webp" alt="Tags Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
 </td>
 </tr>
@@ -1513,15 +1513,15 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📊 Dashboard (Dark)</strong><br/>
 <em>Eye-friendly dark theme</em><br/>
-<a href="screenshots/dashboard-dark.png" target="_blank">
-<img src="screenshots/dashboard-dark.png" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
+<a href="screenshots/dashboard-dark.webp" target="_blank">
+<img src="screenshots/dashboard-dark.webp" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
 </a>
 </td>
 <td width="50%" align="center">
 <strong>📋 Kanban (Dark)</strong><br/>
 <em>Beautiful dark mode Kanban</em><br/>
-<a href="screenshots/kanban-dark.png" target="_blank">
-<img src="screenshots/kanban-dark.png" alt="Kanban Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
+<a href="screenshots/kanban-dark.webp" target="_blank">
+<img src="screenshots/kanban-dark.webp" alt="Kanban Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
 </a>
 </td>
 </tr>
@@ -1530,14 +1530,14 @@ See the application in action. Click on any image to view it in full size.
 <td width="50%" align="center">
 <strong>📅 Calendar (Dark)</strong><br/>
 <em>Dark mode calendar view</em><br/>
-<a href="screenshots/calendar-dark.png" target="_blank">
-<img src="screenshots/calendar-dark.png" alt="Calendar Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
+<a href="screenshots/calendar-dark.webp" target="_blank">
+<img src="screenshots/calendar-dark.webp" alt="Calendar Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
 </a>
 </td>
 <td width="50%" align="center">
 <strong>📈 Reports (Dark)</strong><br/>
 <em>Analytics in dark mode</em><br/>
-<a href="screenshots/reports-dark.png" alt="Reports Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
+<a href="screenshots/reports-dark.webp" alt="Reports Dark Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"/>
 </a>
 </td>
 </tr>
