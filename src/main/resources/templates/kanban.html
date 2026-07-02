@@ -104,7 +104,7 @@
                     </div>
                     <span class="column-count" th:text="${#lists.size(todoTasks)}">0</span>
                 </div>
-                <div class="column-body" data-status="TODO">
+                <div class="column-body">
                     <div th:each="task : ${todoTasks}" class="task-card"
                         th:attr="data-id=${task.id}, data-priority=${task.priority.name()}" th:classappend="${task.isAtrasada() ? 'card-overdue' : ''} + 
                                 ${task.isVenceHoje() ? 'card-due-today' : ''}">
@@ -161,17 +161,17 @@
             </div>
 
             <!-- COLUNA DOING -->
-            <div class="kanban-column column-doing">
+            <div class="kanban-column column-doing" data-status="DOING">
                 <div class="column-header">
                     <div class="column-title">
                         <span class="column-icon" style="background: #06b6d4;">
-                            <i class="bi bi-play-circle-fill"></i>
+                            <i class="bi bi-arrow-repeat"></i>
                         </span>
                         <span>Em Andamento</span>
                     </div>
                     <span class="column-count" th:text="${#lists.size(doingTasks)}">0</span>
                 </div>
-                <div class="column-body" data-status="DOING">
+                <div class="column-body">
                     <div th:each="task : ${doingTasks}" class="task-card"
                         th:attr="data-id=${task.id}, data-priority=${task.priority.name()}">
 
@@ -226,7 +226,7 @@
             </div>
 
             <!-- COLUNA DONE -->
-            <div class="kanban-column column-done">
+            <div class="kanban-column column-done" data-status="DONE">
                 <div class="column-header">
                     <div class="column-title">
                         <span class="column-icon" style="background: #10b981;">
@@ -236,7 +236,7 @@
                     </div>
                     <span class="column-count" th:text="${#lists.size(doneTasks)}">0</span>
                 </div>
-                <div class="column-body" data-status="DONE">
+                <div class="column-body">
                     <div th:each="task : ${doneTasks}" class="task-card card-completed" th:attr="data-id=${task.id}">
 
                         <div class="card-priority-indicator priority-low"></div>

@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.TaskDTO;
+import com.example.demo.dto.TaskStatusUpdateDTO;
 import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
@@ -52,12 +53,23 @@ public class TaskController {
         return ResponseEntity.ok(taskAtualizada);
     }
 
-    // ✅ ATUALIZAR STATUS
+    // ✅ ATUALIZAR STATUS (Query Param - mantém para compatibilidade)
     @PatchMapping("/{id}/status")
     public ResponseEntity<TaskDTO> atualizarStatus(@PathVariable Long id,
                                                    @RequestParam TaskStatus status,
                                                    Authentication authentication) {
         TaskDTO taskAtualizada = taskService.atualizarStatus(id, status, authentication.getName());
+        return ResponseEntity.ok(taskAtualizada);
+    }
+
+    // 🆕 ATUALIZAR STATUS VIA BODY (Para Kanban Drag & Drop)
+    @PutMapping("/{id}/status")
+    public ResponseEntity<TaskDTO> atualizarStatusDnd(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskStatusUpdateDTO dto,
+            Authentication authentication) {
+        
+        TaskDTO taskAtualizada = taskService.atualizarStatus(id, dto.getStatus(), authentication.getName());
         return ResponseEntity.ok(taskAtualizada);
     }
 

@@ -308,3 +308,254 @@
   &.btn-move-back:hover { background: $warning; border-color: $warning; }
   &.btn-delete:hover { background: $danger; border-color: $danger; }
 }
+
+// ========================================
+// DRAG AND DROP EFFECTS
+// ========================================
+
+// Card sendo arrastado
+.task-card.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  cursor: grabbing;
+  z-index: 1000;
+  pointer-events: none; // 💡 Evita problemas de cálculo do dragover nos filhos
+  transition: transform 0.1s ease; // Deixa o início do arrastar mais suave
+}
+
+// Coluna recebendo drop
+.column-body.drag-over {
+  // Usando a função CSS color.mix do Sass moderno ou fallback nativo:
+  background-color: rgba(var(--primary-rgb, $primary), 0.05); 
+  border: 2px dashed $primary;
+  border-radius: var(--border-radius);
+  animation: dragPulse 1.5s infinite ease-in-out; // Um pouco mais lento para não cansar o olho
+}
+
+// Animação de pulse para drag
+@keyframes dragPulse {
+  0%, 100% {
+    box-shadow: inset 0 0 0 0 rgba($primary, 0.4); // 💡 Inset para o pulse ir para DENTRO da coluna
+  }
+  50% {
+    box-shadow: inset 0 0 0 8px rgba($primary, 0);
+  }
+}
+
+// ========================================
+// 📱 RESPONSIVIDADE - ADICIONE NO FINAL
+// ========================================
+
+// ========================================
+// 🎯 OVERLAY ESCURO (fundo quando sidebar abre em mobile)
+// ========================================
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: $z-index-sidebar - 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  
+  &.active {
+    display: block;
+    opacity: 1;
+  }
+  
+  // Esconde em desktop
+  @include desktop {
+    display: none !important;
+  }
+}
+
+// ========================================
+// 🍔 BOTÃO HAMBURGER (só aparece em mobile/tablet)
+// ========================================
+.btn-menu-mobile {
+  display: none; // Escondido por padrão (desktop)
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: var(--transition);
+  @include flex-center;
+  gap: 8px;
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    border-color: $primary;
+    color: $primary;
+  }
+  
+  // ✅ Mostra apenas em mobile/tablet
+  @include tablet {
+    display: inline-flex;
+  }
+  
+  @include mobile {
+    display: inline-flex;
+  }
+}
+
+// ========================================
+// 📐 MAIN CONTENT (ajusta margem com sidebar)
+// ========================================
+.main-content {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  padding: 24px;
+  transition: margin-left 0.3s ease;
+  width: calc(100% - var(--sidebar-width));
+  
+  // ✅ Tablet: sem margem (sidebar escondida)
+  @include tablet {
+    margin-left: 0;
+    width: 100%;
+    padding: 16px;
+  }
+  
+  // ✅ Mobile: sem margem
+  @include mobile {
+    margin-left: 0;
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+// ========================================
+// 📱 SIDEBAR - COMPORTAMENTO RESPONSIVO
+// ========================================
+
+// Tablet (768px - 992px)
+@include tablet {
+  .sidebar {
+    transform: translateX(-100%); // Esconde a sidebar
+    box-shadow: none;
+    
+    &.active {
+      transform: translateX(0); // Mostra quando tem .active
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+// Mobile (até 768px)
+@include mobile {
+  .sidebar {
+    width: 280px; // Um pouco maior em mobile (melhor toque)
+    transform: translateX(-100%);
+    box-shadow: none;
+    
+    &.active {
+      transform: translateX(0);
+      box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+    }
+    
+    // Ajustes específicos para mobile
+    .sidebar-header {
+      padding: 16px;
+    }
+    
+    .sidebar-nav {
+      padding: 12px 8px;
+    }
+    
+    .nav-item {
+      padding: 14px 16px; // Maior área de toque
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    
+    .sidebar-footer {
+      padding: 12px;
+    }
+  }
+}
+
+// ========================================
+// 🎨 HEADER TOP (com botão hamburger)
+// ========================================
+.top-header {
+  @include flex-between;
+  padding: 16px 24px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  margin: -24px -24px 24px -24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  
+  @include mobile {
+    padding: 12px 16px;
+    margin: -12px -12px 16px -12px;
+  }
+  
+  .header-left {
+    @include flex-start;
+    gap: 16px;
+    flex: 1;
+  }
+  
+  .header-right {
+    @include flex-center;
+    gap: 12px;
+  }
+}
+
+// ========================================
+// 📱 AJUSTES EXTRAS PARA MOBILE
+// ========================================
+@include mobile {
+  // Cards ocupam 100% da largura
+  .stat-card,
+  .card-premium {
+    width: 100%;
+  }
+  
+  // Kanban em coluna única
+  .kanban-board {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  
+  // Tabelas com scroll horizontal
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  // Botões maiores para toque
+  .btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  
+  // Inputs maiores
+  input,
+  select,
+  textarea {
+    font-size: 16px; // Evita zoom no iOS
+  }
+  
+  // Modais em tela cheia
+  .modal-dialog {
+    margin: 0;
+    max-width: 100%;
+    height: 100vh;
+    
+    .modal-content {
+      height: 100%;
+      border-radius: 0;
+    }
+  }
+}
