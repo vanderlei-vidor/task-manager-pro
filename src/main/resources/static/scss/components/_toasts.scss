@@ -113,3 +113,157 @@
   opacity: 0.3;
   animation: shrink 5s linear forwards;
 }
+
+// ========================================
+// 🎯 TOAST CONTAINER - POSICIONAMENTO PREMIUM
+// ========================================
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none; // Permite clicar "através" do container
+  
+  @include mobile {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+}
+
+// ========================================
+// 🎨 TOAST PREMIUM - ESTILO MODERNO
+// ========================================
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  min-width: 320px;
+  max-width: 400px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  &.removing {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  
+  // ✅ Variações de tipo
+  &.toast-success {
+    border-left: 4px solid $success;
+    background: linear-gradient(135deg, 
+      color.change($success, $alpha: 0.05) 0%, 
+      var(--bg-primary) 100%);
+    
+    .toast-icon {
+      color: $success;
+    }
+  }
+  
+  &.toast-error {
+    border-left: 4px solid $danger;
+    background: linear-gradient(135deg, 
+      color.change($danger, $alpha: 0.05) 0%, 
+      var(--bg-primary) 100%);
+    
+    .toast-icon {
+      color: $danger;
+    }
+  }
+  
+  &.toast-info {
+    border-left: 4px solid $primary;
+    background: linear-gradient(135deg, 
+      color.change($primary, $alpha: 0.05) 0%, 
+      var(--bg-primary) 100%);
+    
+    .toast-icon {
+      color: $primary;
+    }
+  }
+  
+  &.toast-warning {
+    border-left: 4px solid $warning;
+    background: linear-gradient(135deg, 
+      color.change($warning, $alpha: 0.05) 0%, 
+      var(--bg-primary) 100%);
+    
+    .toast-icon {
+      color: $warning;
+    }
+  }
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: var(--transition);
+  flex-shrink: 0;
+  
+  &:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.3;
+  animation: toastProgress 4s linear forwards;
+}
+
+@keyframes toastProgress {
+  from { width: 100%; }
+  to { width: 0%; }
+}

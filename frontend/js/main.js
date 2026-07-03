@@ -10,6 +10,7 @@ import { $, $$ } from './core/utils.js';
 import { Theme } from './components/theme.js';
 import { Sidebar } from './components/sidebar.js';
 import { Search } from './components/search.js';
+import { Logout } from './components/logout.js';
 
 
 // Features
@@ -17,9 +18,10 @@ import { Kanban } from './features/kanban.js';
 import { Calendar } from './features/calendar.js';
 import { Shortcuts } from './features/shortcuts.js';
 import { Tags } from './features/tags.js';
+import { KeyboardNavigation } from './features/keyboard-navigation.js';
 
 // Pages / Features de Rota
-import { Reports } from './pages/reports.js'; 
+import { Reports } from './pages/reports.js';
 import { Dashboard } from './pages/dashboard.js';
 
 // ========================================
@@ -30,14 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
   Toast.init();
   Theme.init();
   Sidebar.init();
-  
   Search.init();
+  Logout.init();
 
   // 2. Inicializa features globais baseadas em presença de elementos
   Kanban.init();
   Calendar.init();
   Tags.init();
   Shortcuts.init();
+  KeyboardNavigation.init();
 
   // 3. Carrega páginas específicas baseado no roteamento da URL
   _loadPageScripts();

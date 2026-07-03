@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .login-container { max-width: 400px; margin-top: 100px; }
-        .card { border: none; border-radius: 15px; }
-        .btn-primary { background-color: #0d6efd; border: none; border-radius: 8px; }
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin-top: 100px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 8px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container login-container">
         <div class="card shadow-lg p-4">
@@ -35,23 +52,146 @@
                     <label class="form-label small fw-bold">E-mail</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope"></i></span>
-                        <input type="email" name="username" class="form-control border-start-0" placeholder="email" required>
+                        <input type="email" name="username" class="form-control border-start-0" placeholder="email"
+                            required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Senha</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock"></i></span>
-                        <input type="password" name="password" class="form-control border-start-0" placeholder="senha" required>
+                        <input type="password" name="password" class="form-control border-start-0" placeholder="senha"
+                            required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar</button>
             </form>
-            
+
             <div class="text-center mt-3">
-                <p class="small text-muted">Ainda não tem conta?<a th:href="@{/cadastrar}" class="text-decoration-none">Crie uma aqui</a></p>
+                <p class="small text-muted">Ainda não tem conta?<a th:href="@{/cadastrar}"
+                        class="text-decoration-none">Crie uma aqui</a></p>
             </div>
         </div>
     </div>
+    <!-- 👋 TOAST DE LOGOUT (Versão Premium) -->
+    <!-- 👋 TOAST DE LOGOUT (Versão Premium e Autônoma) -->
+    <script th:if="${param.logout}">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                // 🎨 Injeta os estilos essenciais caso o main.css não esteja presente nesta tela
+                if (!document.querySelector('#toast-inline-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'toast-inline-style';
+                    style.textContent = `
+                        .toast-container {
+                            position: fixed !important;
+                            top: 24px !important;
+                            right: 24px !important;
+                            z-index: 99999 !important;
+                            display: flex !important;
+                            flex-direction: column !important;
+                            gap: 12px !important;
+                            max-width: 400px !important;
+                            pointer-events: none !important;
+                            font-family: 'Inter', -apple-system, sans-serif !important;
+                        }
+                        .toast {
+                            display: flex !important;
+                            align-items: flex-start !important;
+                            gap: 12px !important;
+                            padding: 16px 20px !important;
+                            background: #ffffff !important;
+                            border: 1px solid #e5e7eb !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important;
+                            min-width: 320px !important;
+                            max-width: 400px !important;
+                            pointer-events: auto !important;
+                            opacity: 0 !important;
+                            transform: translateX(100%) !important;
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                            position: relative !important;
+                            overflow: hidden !important;
+                            border-left: 4px solid #10b981 !important;
+                            background: linear-gradient(135deg, rgba(16,185,129,0.05) 0%, #ffffff 100%) !important;
+                        }
+                        .toast.show { opacity: 1 !important; transform: translateX(0) !important; }
+                        .toast.removing { opacity: 0 !important; transform: translateX(100%) !important; }
+                        .toast-icon { font-size: 20px !important; color: #10b981 !important; flex-shrink: 0 !important; margin-top: 2px !important; }
+                        .toast-content { flex: 1 !important; min-width: 0 !important; }
+                        .toast-title { font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; margin-bottom: 4px !important; }
+                        .toast-message { font-size: 14px !important; color: #4b5563 !important; line-height: 1.4 !important; }
+                        .toast-close { background: transparent !important; border: none !important; color: #9ca3af !important; cursor: pointer !important; padding: 4px !important; border-radius: 6px !important; flex-shrink: 0 !important; }
+                        .toast-close:hover { background: #f3f4f6 !important; color: #111827 !important; }
+                        .toast-progress { position: absolute !important; bottom: 0 !important; left: 0 !important; height: 3px !important; background: #10b981 !important; opacity: 0.3 !important; animation: toastProgressPremium 4s linear forwards !important; }
+                        @keyframes toastProgressPremium { from { width: 100%; } to { width: 0%; } }
+                        @media (max-width: 768px) { .toast-container { top: 16px !important; right: 16px !important; left: 16px !important; max-width: none !important; } .toast { min-width: auto !important; max-width: none !important; } }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                // Cria o container se não existir
+                let container = document.querySelector('.toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'toast-container';
+                    document.body.appendChild(container);
+                }
+
+                // Cria o toast premium
+                const toast = document.createElement('div');
+                toast.className = 'toast toast-success';
+                toast.innerHTML = `
+                    <div class="toast-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">✅ Logout realizado!</div>
+                        <div class="toast-message">Você saiu com segurança. Até a próxima!</div>
+                    </div>
+                    <button class="toast-close" aria-label="Fechar">
+                        <i class="bi bi-x"></i>
+                    </button>
+                    <div class="toast-progress"></div>
+                `;
+
+                // Adiciona ao container
+                container.appendChild(toast);
+
+                // Animação de entrada fluida
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        toast.classList.add('show');
+                    });
+                });
+
+                // Remove após 4 segundos de forma limpa
+                const removeToast = () => {
+                    if (!toast.parentNode) return;
+                    toast.classList.remove('show');
+                    toast.classList.add('removing');
+                    setTimeout(() => {
+                        toast.remove();
+                        if (container && container.children.length === 0) {
+                            container.remove();
+                            const inlineStyle = document.querySelector('#toast-inline-style');
+                            if (inlineStyle) inlineStyle.remove();
+                        }
+                    }, 300);
+                };
+
+                const autoTimeout = setTimeout(removeToast, 4000);
+
+                // Botão de fechar (reseta timer automático para evitar bugs)
+                toast.querySelector('.toast-close').addEventListener('click', () => {
+                    clearTimeout(autoTimeout);
+                    removeToast();
+                });
+            }, 500);
+        });
+        /*]]>*/
+    </script>
 </body>
+
 </html>
