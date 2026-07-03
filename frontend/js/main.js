@@ -11,6 +11,7 @@ import { Theme } from './components/theme.js';
 import { Sidebar } from './components/sidebar.js';
 import { Search } from './components/search.js';
 
+
 // Features
 import { Kanban } from './features/kanban.js';
 import { Calendar } from './features/calendar.js';
@@ -29,13 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
   Toast.init();
   Theme.init();
   Sidebar.init();
-  Shortcuts.init();
+  
   Search.init();
 
   // 2. Inicializa features globais baseadas em presença de elementos
   Kanban.init();
   Calendar.init();
   Tags.init();
+  Shortcuts.init();
 
   // 3. Carrega páginas específicas baseado no roteamento da URL
   _loadPageScripts();

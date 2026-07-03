@@ -98,7 +98,7 @@ public class SecurityConfig {
                         .permitAll())
                 // ✅ CONFIGURA LOGOUT
                 .logout(logout -> logout
-                        .logoutUrl("/logout-web")
+                        .logoutUrl("/logout") 
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

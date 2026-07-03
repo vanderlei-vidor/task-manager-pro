@@ -12,7 +12,7 @@ class KanbanManager {
     this.columns = [];
     this.draggedCard = null;
     this.originalColumn = null;
-    
+
     this.statusLabels = {
       'TODO': '📋 A Fazer',
       'DOING': '⚡ Em Andamento',
@@ -28,7 +28,7 @@ class KanbanManager {
     if (this.columns.length === 0) return;
 
     console.log('🎯 Kanban Manager inicializado');
-    
+
     this._initFilters();
     this._initDragAndDrop();
     this._animateColumnCounters();
@@ -39,7 +39,7 @@ class KanbanManager {
   // ========================================
   _initFilters() {
     if (this.filterButtons.length === 0) return;
-    
+
     this.filterButtons.forEach(btn => {
       btn.addEventListener('click', () => this._handleFilter(btn));
     });
@@ -84,14 +84,14 @@ class KanbanManager {
       card.addEventListener('dragstart', (e) => {
         this.draggedCard = card;
         this.originalColumn = card.closest('.kanban-column');
-        
+
         setTimeout(() => card.classList.add('dragging'), 0);
-        
+
         e.dataTransfer.effectAllowed = 'move';
-        
+
         const taskId = card.dataset.taskId || card.dataset.id;
         e.dataTransfer.setData('text/plain', taskId);
-        
+
         console.log(`🎯 Drag iniciado: Task ${taskId}`);
       });
 
@@ -131,7 +131,7 @@ class KanbanManager {
         if (!this.draggedCard) return;
 
         const taskId = e.dataTransfer.getData('text/plain');
-        
+
         const newStatus = this._getColumnStatus(column);
         const oldStatus = this._getColumnStatus(this.originalColumn);
 
@@ -154,14 +154,14 @@ class KanbanManager {
         // Move o card visualmente usando a constante local
         columnBody.appendChild(targetCard);
         targetCard.classList.remove('dragging');
-        
+
         targetCard.style.animation = 'none';
         setTimeout(() => {
           targetCard.style.animation = 'slideInUp 0.3s ease-out';
         }, 10);
 
         this._updateColumnCounters();
-        
+
         // 💡 Passa as referências fixas para evitar problemas de concorrência na API
         this._updateTaskStatus(taskId, newStatus, oldStatus, targetCard, sourceColumn);
 
@@ -176,12 +176,12 @@ class KanbanManager {
     if (column.classList.contains('column-todo')) return 'TODO';
     if (column.classList.contains('column-doing')) return 'DOING';
     if (column.classList.contains('column-done')) return 'DONE';
-    
+
     const title = column.querySelector('.column-title')?.textContent.toLowerCase() || '';
     if (title.includes('fazer') || title.includes('todo')) return 'TODO';
     if (title.includes('andamento') || title.includes('doing')) return 'DOING';
     if (title.includes('conclu') || title.includes('done')) return 'DONE';
-    
+
     return null;
   }
 
@@ -244,11 +244,11 @@ class KanbanManager {
     this.columns.forEach(column => {
       const body = column.querySelector('.column-body');
       const counter = column.querySelector('.column-count');
-      
+
       if (body && counter) {
         const count = body.querySelectorAll('.task-card').length;
         counter.textContent = count;
-        
+
         counter.style.animation = 'scaleIn 0.3s ease-out';
         setTimeout(() => { counter.style.animation = ''; }, 300);
       }

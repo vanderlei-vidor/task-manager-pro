@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- ✅ CORRIGIDO: viewport com sintaxe correta -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Gestor Pro</title>
 
@@ -16,7 +15,8 @@
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- CSS Customizado Premium -->
     <link rel="stylesheet" th:href="@{/css/main.css}">
@@ -24,7 +24,7 @@
 
 <body>
 
-    <!-- 🎯 OVERLAY ESCURO (adicione ANTES da sidebar) -->
+    <!-- 🎯 OVERLAY ESCURO -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- SIDEBAR FIXA -->
@@ -48,7 +48,8 @@
                 <span>Kanban</span>
             </a>
 
-            <a th:href="@{/calendario}" class="nav-item" th:classappend="${currentPage == 'calendario' ? 'active' : ''}">
+            <a th:href="@{/calendario}" class="nav-item"
+                th:classappend="${currentPage == 'calendario' ? 'active' : ''}">
                 <i class="bi bi-calendar3"></i>
                 <span>Calendário</span>
             </a>
@@ -58,7 +59,8 @@
                 <span>Tags</span>
             </a>
 
-            <a th:href="@{/relatorios}" class="nav-item" th:classappend="${currentPage == 'relatorios' ? 'active' : ''}">
+            <a th:href="@{/relatorios}" class="nav-item"
+                th:classappend="${currentPage == 'relatorios' ? 'active' : ''}">
                 <i class="bi bi-bar-chart-fill"></i>
                 <span>Relatórios</span>
             </a>
@@ -70,7 +72,6 @@
                 <span>Configurações</span>
             </a>
 
-            <!-- ✅ CORRIGIDO: Meu Perfil DENTRO da nav -->
             <a th:href="@{/perfil}" class="nav-item" th:classappend="${currentPage == 'perfil' ? 'active' : ''}">
                 <i class="bi bi-person-circle"></i>
                 <span>Meu Perfil</span>
@@ -79,13 +80,18 @@
 
         <div class="sidebar-footer">
             <div class="user-info">
-                <div class="user-avatar" th:text="${#strings.substring(nomeUsuario, 0, 1)}">U</div>
+                <!-- 💡 CORRIGIDO: Fallback caso nomeUsuario venha nulo (Evita erro 500 no servidor) -->
+                <div class="user-avatar"
+                    th:text="${nomeUsuario != null and !#strings.isEmpty(nomeUsuario) ? #strings.substring(nomeUsuario, 0, 1) : 'U'}">
+                    U</div>
                 <div class="user-details">
-                    <div class="user-name" th:text="${nomeUsuario}">Usuário</div>
+                    <div class="user-name" th:text="${nomeUsuario ?: 'Usuário'}">Usuário</div>
                     <div class="user-role">Plano Pro</div>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post">
+                <!-- ✅ ESSENCIAL: CSRF Token -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button type="submit" class="btn-logout" title="Sair">
                     <i class="bi bi-box-arrow-right"></i>
                 </button>
@@ -98,7 +104,6 @@
         <!-- HEADER -->
         <header class="top-header">
             <div class="header-left">
-                <!-- 🍔 BOTÃO HAMBURGER -->
                 <button class="btn-menu-mobile" id="btnMenuMobile" aria-label="Abrir menu">
                     <i class="bi bi-list"></i>
                 </button>
@@ -115,7 +120,8 @@
                 <button class="btn-icon" title="Modo Escuro" id="btnTheme">
                     <i class="bi bi-moon-fill"></i>
                 </button>
-                <button class="btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa" title="Nova Tarefa (Ctrl+N)">
+                <button class="btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalNovaTarefa"
+                    title="Nova Tarefa (Ctrl+N)">
                     <i class="bi bi-plus-lg"></i>
                     <span>Nova Tarefa</span>
                 </button>
@@ -138,7 +144,7 @@
         </div>
     </main>
 
-    <!-- ✅ CORRIGIDO: Modal DENTRO do body -->
+    <!-- MODAL NOVA TAREFA -->
     <div class="modal fade" id="modalNovaTarefa" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-premium">
@@ -152,11 +158,13 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label-premium">Título *</label>
-                            <input type="text" name="title" class="form-control-premium" placeholder="O que precisa ser feito?" required>
+                            <input type="text" name="title" class="form-control-premium"
+                                placeholder="O que precisa ser feito?" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label-premium">Descrição</label>
-                            <textarea name="description" class="form-control-premium" rows="3" placeholder="Detalhes..."></textarea>
+                            <textarea name="description" class="form-control-premium" rows="3"
+                                placeholder="Detalhes..."></textarea>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -184,10 +192,13 @@
                                     <i class="bi bi-tags me-1"></i>Tags
                                 </label>
                                 <div class="tags-selector">
+                                    <!-- 💡 OTIMIZADO: Uso mais elegante e seguro de expressões literais para estilo inline -->
                                     <div th:each="tag : ${listaTags}" class="tag-checkbox-wrapper">
-                                        <input type="checkbox" class="tag-checkbox" th:id="'tag-' + ${tag.id}" name="tagIds" th:value="${tag.id}">
-                                        <label th:for="'tag-' + ${tag.id}" class="tag-label" th:style="'--tag-color:' + ${tag.color}">
-                                            <span class="tag-color-dot" th:style="'background:' + ${tag.color}"></span>
+                                        <input type="checkbox" class="tag-checkbox" th:id="'tag-' + ${tag.id}"
+                                            name="tagIds" th:value="${tag.id}">
+                                        <label th:for="'tag-' + ${tag.id}" class="tag-label"
+                                            th:style="|--tag-color: ${tag.color}|">
+                                            <span class="tag-color-dot" th:style="|background: ${tag.color}|"></span>
                                             <span th:text="${tag.name}">Tag</span>
                                         </label>
                                     </div>
@@ -208,6 +219,95 @@
             </div>
         </div>
     </div>
+
+    <!-- 🎯 MODAL DE ATALHOS DE TECLADO (💡 CORRIGIDO: Removido a cópia duplicada que estava abaixo) -->
+    <div class="modal fade" id="modalAtalhos" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content modal-premium modal-shortcuts">
+                <div class="modal-header-premium">
+                    <h5 class="modal-title">
+                        <i class="bi bi-keyboard me-2"></i>Atalhos de Teclado
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="shortcuts-grid">
+                        <!-- Navegação -->
+                        <div class="shortcut-category">
+                            <h6 class="category-title">
+                                <i class="bi bi-compass"></i> Navegação
+                            </h6>
+                            <div class="shortcut-item">
+                                <span>Ir para Dashboard</span>
+                                <div class="shortcut-keys"><kbd>g</kbd> <kbd>d</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Ir para Kanban</span>
+                                <div class="shortcut-keys"><kbd>g</kbd> <kbd>k</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Ir para Calendário</span>
+                                <div class="shortcut-keys"><kbd>g</kbd> <kbd>c</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Ir para Tags</span>
+                                <div class="shortcut-keys"><kbd>g</kbd> <kbd>t</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Ir para Relatórios</span>
+                                <div class="shortcut-keys"><kbd>g</kbd> <kbd>r</kbd></div>
+                            </div>
+                        </div>
+
+                        <!-- Ações -->
+                        <div class="shortcut-category">
+                            <h6 class="category-title">
+                                <i class="bi bi-lightning-charge"></i> Ações
+                            </h6>
+                            <div class="shortcut-item">
+                                <span>Nova tarefa</span>
+                                <div class="shortcut-keys"><kbd>Ctrl</kbd> <kbd>+</kbd> <kbd>N</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Buscar tarefas</span>
+                                <div class="shortcut-keys"><kbd>Ctrl</kbd> <kbd>+</kbd> <kbd>K</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Alternar tema</span>
+                                <div class="shortcut-keys"><kbd>Ctrl</kbd> <kbd>+</kbd> <kbd>D</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Mostrar atalhos</span>
+                                <div class="shortcut-keys"><kbd>?</kbd></div>
+                            </div>
+                        </div>
+
+                        <!-- Geral -->
+                        <div class="shortcut-category">
+                            <h6 class="category-title">
+                                <i class="bi bi-gear"></i> Geral
+                            </h6>
+                            <div class="shortcut-item">
+                                <span>Fechar modal</span>
+                                <div class="shortcut-keys"><kbd>Esc</kbd></div>
+                            </div>
+                            <div class="shortcut-item">
+                                <span>Fazer logout</span>
+                                <div class="shortcut-keys"><kbd>Ctrl</kbd> <kbd>+</kbd> <kbd>Shift</kbd> <kbd>+</kbd>
+                                    <kbd>L</kbd></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🆕 BOTÃO FLUTUANTE DE AJUDA -->
+    <button type="button" class="btn-help" data-bs-toggle="modal" data-bs-target="#modalAtalhos"
+        title="Atalhos de teclado (?)">
+        <i class="bi bi-question-lg"></i>
+    </button>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

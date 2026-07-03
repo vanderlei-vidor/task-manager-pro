@@ -1,27 +1,12 @@
 // ========================================
 // DASHBOARD - GESTOR PRO
 // ========================================
-
-// Corrigido: Apontando para os arquivos corretos de variáveis e mixins Globais do Sass
 @use '../abstracts/variables' as *;
 @use '../abstracts/mixins' as *;
 
-
-// No arquivo que estiliza o container do conteúdo principal (ex: .main-content ou .wrapper)
-.main-content { 
-  // Empurra o conteúdo exatamente o tamanho que a sidebar ocupa
-  margin-left: var(--sidebar-width); 
-  
-  // Se a sidebar estiver escondendo o cabeçalho, adicione também o espaço do topo:
- // padding-top: var(--header-height, 70px); 
-  
-  width: calc(100% - var(--sidebar-width));
-  
-}
-
 .page-header {
   @include slide-in-up;
-  margin-bottom: 32px; // Adicionado para dar um respiro saudável antes do grid de cards começar
+  margin-bottom: 32px;
 }
 
 .page-title {
@@ -45,11 +30,9 @@
   margin-bottom: 20px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
-  
-  // Ajustado: Alinha ícones/textos verticalmente no centro, mas mantém o alinhamento à esquerda nativo
   display: flex;
   align-items: center;
-  gap: 8px; 
+  gap: 8px;
 }
 
 // ===== ALERTS =====

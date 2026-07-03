@@ -1,16 +1,22 @@
 // ========================================
-// SIDEBAR - MENU MOBILE COM OVERLAY
+// SIDEBAR - MENU MOBILE COMPLETO
 // ========================================
 import { $, $$ } from '../core/utils.js';
+import { Config } from '../core/config.js';
 
 class SidebarManager {
   constructor() {
-    this.btnMenu = $('#btnMenuMobile');
-    this.sidebar = $('.sidebar');
-    this.overlay = $('#sidebarOverlay'); // ✅ NOVO
+    this.btnMenu = null;
+    this.sidebar = null;
+    this.overlay = null;
   }
 
   init() {
+    // Captura os elementos
+    this.btnMenu = $('#btnMenuMobile');
+    this.sidebar = $('.sidebar');
+    this.overlay = $('#sidebarOverlay');
+
     if (!this.sidebar) return;
     
     console.log('📱 Sidebar Manager inicializado');
@@ -58,7 +64,7 @@ class SidebarManager {
 
     // ✅ Fecha ao clicar fora (em mobile)
     document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 992) {
+      if (window.innerWidth <= Config.breakpoints.desktop) {
         if (this.sidebar &&
             !this.sidebar.contains(e.target) &&
             this.btnMenu &&
@@ -70,7 +76,7 @@ class SidebarManager {
 
     // ✅ Fecha ao redimensionar para desktop
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 992) {
+      if (window.innerWidth > Config.breakpoints.desktop) {
         this.close();
       }
     });
@@ -79,7 +85,7 @@ class SidebarManager {
     const navLinks = $$('.sidebar-nav .nav-item');
     navLinks.forEach(link => {
       link.addEventListener('click', () => {
-        if (window.innerWidth <= 992) {
+        if (window.innerWidth <= Config.breakpoints.desktop) {
           this.close();
         }
       });

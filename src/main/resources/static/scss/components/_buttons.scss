@@ -15,7 +15,7 @@
   color: #ffffff;
   // Corrigido: Usando color.change para sumir com os warnings das sombras
   box-shadow: 0 4px 12px color.change($primary, $alpha: 0.3);
-  
+
   &:hover {
     box-shadow: 0 8px 20px color.change($primary, $alpha: 0.4);
   }
@@ -27,7 +27,7 @@
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  
+
   &:hover {
     background: var(--bg-tertiary);
     border-color: $primary;
@@ -47,24 +47,24 @@
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
   }
-  
+
   &.btn-success:hover {
     background: $success;
     color: #ffffff;
     border-color: $success;
   }
-  
+
   &.btn-primary:hover {
     background: $primary;
     color: #ffffff;
     border-color: $primary;
   }
-  
+
   &.btn-danger:hover {
     background: $danger;
     color: #ffffff;
@@ -78,7 +78,7 @@
   height: 28px;
   border-radius: 6px;
   font-size: 13px;
-  
+
   &:hover {
     // Corrigido: Combinado o translateY herdado com o scale para não quebrar a animação
     transform: translateY(-2px) scale(1.1);
@@ -98,7 +98,7 @@
   transition: var(--transition);
   font-size: 18px;
   box-shadow: var(--shadow-sm);
-  
+
   &:hover {
     background: $primary;
     color: #ffffff;
@@ -106,33 +106,49 @@
     box-shadow: var(--shadow-lg);
     transform: scale(1.1);
   }
-  
+
   &:active {
     transform: scale(0.95);
   }
 }
 
-// ===== BOTÃO DE AJUDA =====
+// ========================================
+// 🍔 BOTÃO FLUTUANTE DE AJUDA
+// ========================================
 .btn-help {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: $primary;
   color: #ffffff;
   border: none;
+  font-size: 20px;
   cursor: pointer;
-  // Corrigido: Removido o warning do rgba antigo aqui também
-  box-shadow: 0 4px 12px color.change($primary, $alpha: 0.4);
-  @include flex-center;
-  font-size: 18px;
+  box-shadow: 0 4px 12px rgba($primary, 0.4);
   transition: var(--transition);
   z-index: 999;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px color.change($primary, $alpha: 0.5);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 20px rgba($primary, 0.5);
+    background: color.adjust($primary, $lightness: -5%);
+  }
+
+  &:active {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  @media (max-width: 768px) {
+    bottom: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
   }
 }

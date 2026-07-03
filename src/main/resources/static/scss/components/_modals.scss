@@ -103,3 +103,108 @@ dialog.modal-premium {
   gap: 4px;
   flex-wrap: wrap;
 }
+
+// ========================================
+// 🎹 MODAL DE ATALHOS DE TECLADO
+// ========================================
+
+.modal-shortcuts {
+  .modal-body {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.shortcut-category {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  transition: var(--transition);
+  
+  &:hover {
+    border-color: $primary;
+    box-shadow: 0 4px 12px rgba($primary, 0.1);
+  }
+  
+  .category-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: $primary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover .shortcut-keys kbd {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  span {
+    font-size: $font-size-base;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  
+  .shortcut-keys {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    kbd {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-family: 'Inter', monospace;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+      min-width: 28px;
+      text-align: center;
+      transition: var(--transition);
+      
+      &:hover {
+        background: $primary;
+        color: #ffffff;
+        border-color: $primary;
+      }
+    }
+  }
+}
