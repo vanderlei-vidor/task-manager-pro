@@ -6,15 +6,18 @@ import com.example.demo.dto.RegistroUsuarioDTO;
 import com.example.demo.model.RefreshToken; // ✅ NOVO
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.security.ClientIpUtils;
+import com.example.demo.service.AuditService;
 import com.example.demo.service.AutenticacaoService;
 import com.example.demo.service.JwtUtilService;
 import com.example.demo.service.RefreshTokenService; // ✅ NOVO
 import com.example.demo.exception.AuthException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j; // ✅ ADICIONAR
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication; // ✅ ADICIONAR
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -22,36 +25,37 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j // ✅ ADICIONAR AQUI!
+@Slf4j
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AutenticacaoService autenticacaoService;
-
-    @Autowired
-    private UsuarioRepository repository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtilService jwtUtilService;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
+    private final AutenticacaoService autenticacaoService;
+    private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtilService jwtUtilService;
+    private final RefreshTokenService refreshTokenService;
+    private final AuditService auditService;
 
     /**
      * Endpoint de Login
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequestDTO dto,
+                                                     HttpServletRequest request) {
+        String clientIp = ClientIpUtils.getClientIP(request);
+
         Usuario usuario = repository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new AuthException(AuthException.ReasonType.USER_NOT_FOUND));
+                .orElseGet(() -> {
+                    // ✅ Auditoria: usuário não existe (tentativa suspeita)
+                    auditService.registrarLogin(dto.getEmail(), false, clientIp);
+                    throw new AuthException(AuthException.ReasonType.USER_NOT_FOUND);
+                });
 
         if (!passwordEncoder.matches(dto.getSenha(), usuario.getSenha())) {
+            // ✅ Auditoria: senha incorreta
+            auditService.registrarLogin(usuario.getEmail(), false, clientIp);
             throw new AuthException(AuthException.ReasonType.PASSWORD_DOES_NOT_MATCH);
         }
 
@@ -64,7 +68,9 @@ public class AuthController {
         // ✅ NOVO: Gera Refresh Token (UUID armazenado no banco)
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuario.getEmail());
 
-        log.info("✅ Login realizado com sucesso: {}", usuario.getEmail());
+        // ✅ Auditoria: login bem-sucedido
+        auditService.registrarLogin(usuario.getEmail(), true, clientIp);
+        log.info("Login realizado com sucesso: {}", usuario.getEmail());
 
         Map<String, Object> response = new HashMap<>();
         response.put("nome", usuario.getNome());
@@ -106,42 +112,28 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody Map<String, String> request) {
-        log.info("🔄 [DEBUG] Requisição de refresh recebida");
-        log.info("🔄 [DEBUG] Body: {}", request);
+        log.info("Solicitação de renovação de token recebida");
 
         String refreshTokenStr = request.get("refreshToken");
-        log.info("🔄 [DEBUG] Refresh token extraído: {}", refreshTokenStr);
 
         if (refreshTokenStr == null || refreshTokenStr.isBlank()) {
-            log.error("❌ [DEBUG] Refresh token está null ou vazio!");
+            log.warn("Refresh token ausente ou vazio na requisição");
             throw new AuthException(AuthException.ReasonType.INVALID_TOKEN);
         }
 
         try {
-            log.info("🔄 [DEBUG] Buscando token no banco...");
             RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenStr);
-            log.info("🔄 [DEBUG] Token encontrado! ID: {}, Revoked: {}, Expiry: {}",
-                    refreshToken.getId(),
-                    refreshToken.isRevoked(),
-                    refreshToken.getExpiryDate());
-
-            log.info("🔄 [DEBUG] Validando expiração...");
             refreshTokenService.verifyExpiration(refreshToken);
-            log.info("🔄 [DEBUG] Token válido!");
 
-            log.info("🔄 [DEBUG] Rotacionando token...");
             RefreshToken newRefreshToken = refreshTokenService.rotateToken(refreshToken);
-            log.info("🔄 [DEBUG] Novo token criado! ID: {}", newRefreshToken.getId());
-
-            Usuario usuario = refreshToken.getUsuario();
-            log.info("🔄 [DEBUG] Gerando novo access token para: {}", usuario.getEmail());
+            Usuario usuario = newRefreshToken.getUsuario();
 
             String newAccessToken = jwtUtilService.generateToken(
                     usuario.getEmail(),
                     "ROLE_USER",
                     usuario.getId());
 
-            log.info("✅ [DEBUG] Token renovado com sucesso para: {}", usuario.getEmail());
+            log.info("✅ Token renovado com sucesso para: {}", usuario.getEmail());
 
             Map<String, Object> response = new HashMap<>();
             response.put("accessToken", newAccessToken);
@@ -151,7 +143,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("❌ [DEBUG] ERRO ao renovar token: {}", e.getMessage(), e);
+            log.warn("Falha ao renovar token: {}", e.getMessage());
             throw new AuthException(AuthException.ReasonType.INVALID_TOKEN);
         }
     }
@@ -160,17 +152,20 @@ public class AuthController {
      * Endpoint de Logout - Revoga todos os tokens
      */
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(Authentication authentication) {
+    public ResponseEntity<Map<String, String>> logout(Authentication authentication,
+                                                      HttpServletRequest request) {
         // ✅ Se não houver autenticação ativa ou o usuário não estiver autenticado, retorna 401 na hora
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String email = authentication.getName();
+        String clientIp = ClientIpUtils.getClientIP(request);
 
         try {
             refreshTokenService.revokeAllUserTokens(email);
-            log.info("🚪 Logout realizado: {}", email);
+            auditService.registrarLogout(email, clientIp);
+            log.info("Logout realizado: {}", email);
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Logout realizado com sucesso!");
@@ -178,7 +173,7 @@ public class AuthController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("❌ Erro no logout: {}", e.getMessage());
+            log.error("Erro no logout: {}", e.getMessage());
             throw new AuthException(AuthException.ReasonType.LOGOUT_FAILED);
         }
     }

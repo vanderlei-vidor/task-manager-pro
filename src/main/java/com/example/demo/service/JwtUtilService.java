@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,34 @@ public class JwtUtilService {
 
     private final ApplicationProperties properties;
     private long refreshTokenDuration = 604800000L; // 7 dias
+
+    /**
+     * ✅ FAIL-FAST: valida o JWT secret na inicialização.
+     *
+     * A app NÃO sobe se:
+     *  - o secret estiver ausente/vazio;
+     *  - o secret tiver menos de 32 bytes (HS256 requer ≥256 bits).
+     *
+     * Isso evita rodar com chave degenerada/insegura em produção.
+     */
+    @PostConstruct
+    public void validateSecret() {
+        String secret = properties.getJwt().getSecret();
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                "JWT_SECRET não configurado. Defina a variável de ambiente JWT_SECRET "
+                + "ou a propriedade 'application.jwt.secret' antes de iniciar a aplicação."
+            );
+        }
+        // HS256 recomenda chave de no mínimo 256 bits (32 bytes)
+        if (secret.getBytes().length < 32) {
+            throw new IllegalStateException(
+                "JWT_SECRET inseguro: deve ter no mínimo 32 caracteres (256 bits) para HS256. "
+                + "Tamanho atual: " + secret.getBytes().length + " bytes."
+            );
+        }
+        log.info("🔐 JWT secret validado ({} bytes)", secret.getBytes().length);
+    }
 
     /**
      * Gera Access Token JWT

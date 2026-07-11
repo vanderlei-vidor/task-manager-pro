@@ -14,6 +14,8 @@ import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +95,31 @@ public class TaskService {
                 .stream()
                 .map(this::converterParaDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ========================================
+    // LISTAR TASKS PAGINADO (API REST)
+    // ========================================
+
+    /**
+     * Lista as tasks do usuário de forma paginada.
+     * Usa countQuery explícito (DISTINCT + JOIN FETCH não deriva count automaticamente).
+     *
+     * @param emailUsuario email do usuário autenticado
+     * @param pageable     parâmetros de paginação/ordenação (page, size, sort)
+     * @return Page<TaskDTO> com content, totalElements, totalPages, etc.
+     */
+    @Transactional(readOnly = true)
+    public Page<TaskDTO> listarTasksPaginado(String emailUsuario, Pageable pageable) {
+        log.debug("Listando tasks paginado do usuário: {} | pageable={}", emailUsuario, pageable);
+
+        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+
+        Page<Task> page = taskRepository.findByUsuarioIdWithTagsPaginado(usuario.getId(), pageable);
+
+        // ✅ page.map converte Page<Task> → Page<TaskDTO> usando o MapStruct mapper
+        return page.map(taskMapper::toDTO);
     }
 
     // ========================================

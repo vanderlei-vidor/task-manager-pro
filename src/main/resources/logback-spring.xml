@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Configuração de logging do Task Manager Pro.
+
+  - Dev (perfil "dev"): console colorido, legível para desenvolvimento.
+  - Prod (perfil default): JSON estruturado, parseável por ELK/Loki/Datadog/Splunk.
+
+  Os logs de auditoria (AuditService) também saem em JSON em prod,
+  facilitando correlação por SIEM.
+-->
+<configuration>
+
+    <!-- ====================================================== -->
+    <!-- PERFIL DEV: console colorido, legível                  -->
+    <!-- ====================================================== -->
+    <springProfile name="dev">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+        <!-- SQL em dev (útil para debugar queries) -->
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    </springProfile>
+
+    <!-- ====================================================== -->
+    <!-- PERFIL PROD (default): JSON estruturado                -->
+    <!-- ====================================================== -->
+    <springProfile name="prod">
+        <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <!-- Campos principais sempre presentes -->
+                <customFields>{"app":"task-manager-pro"}</customFields>
+                <fieldNames>
+                    <timestamp>@timestamp</timestamp>
+                    <message>message</message>
+                    <logger>logger</logger>
+                    <levelValue>[ignore]</levelValue>
+                </fieldNames>
+                <!-- Inclui MDC (correlation ID no futuro) -->
+                <includeMdcKeyName>requestId</includeMdcKeyName>
+                <includeMdcKeyName>userId</includeMdcKeyName>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="JSON"/>
+        </root>
+
+        <!-- Reduz ruído de frameworks em prod -->
+        <logger name="org.hibernate" level="WARN"/>
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="org.apache.tomcat" level="WARN"/>
+    </springProfile>
+
+    <!-- ====================================================== -->
+    <!-- FALLBACK: sem perfil explícito (ex.: testes)           -->
+    <!-- ====================================================== -->
+    <springProfile name="!dev &amp; !prod">
+        <appender name="CONSOLE_FALLBACK" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE_FALLBACK"/>
+        </root>
+    </springProfile>
+
+</configuration>

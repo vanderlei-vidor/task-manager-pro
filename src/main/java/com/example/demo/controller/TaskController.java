@@ -6,6 +6,10 @@ import com.example.demo.model.TaskStatus;
 import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,17 +27,28 @@ public class TaskController {
 
     // ✅ CRIAR
     @PostMapping
-    public ResponseEntity<TaskDTO> criar(@Valid @RequestBody TaskDTO dto, 
+    public ResponseEntity<TaskDTO> criar(@Valid @RequestBody TaskDTO dto,
                                          Authentication authentication) {
         TaskDTO taskCriada = taskService.criarTask(dto, authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCriada);
     }
 
-    // ✅ LISTAR
+    // ✅ LISTAR (lista completa — mantido para compatibilidade)
     @GetMapping
     public ResponseEntity<List<TaskDTO>> listar(Authentication authentication) {
         List<TaskDTO> tasks = taskService.listarTasksDoUsuario(authentication.getName());
         return ResponseEntity.ok(tasks);
+    }
+
+    // ✅ LISTAR PAGINADO (API REST escalável)
+    // Exemplo: GET /api/tasks/page?page=0&size=20&sort=dataCriacao,desc
+    // Spring converte os query params em Pageable automaticamente.
+    @GetMapping("/page")
+    public ResponseEntity<Page<TaskDTO>> listarPaginado(
+            Authentication authentication,
+            @PageableDefault(size = 20, sort = "dataCriacao", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<TaskDTO> page = taskService.listarTasksPaginado(authentication.getName(), pageable);
+        return ResponseEntity.ok(page);
     }
 
     // ✅ BUSCAR POR ID

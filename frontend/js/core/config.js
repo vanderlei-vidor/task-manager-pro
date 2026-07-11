@@ -41,6 +41,13 @@ export const Config = {
   api: {
     baseUrl: '/api',
     timeout: 10000
+  },
+
+  // 🔐 Endpoints de autenticação
+  auth: {
+    loginUrl: '/auth/login',
+    refreshUrl: '/auth/refresh',
+    logoutUrl: '/auth/logout'
   }
 };
 

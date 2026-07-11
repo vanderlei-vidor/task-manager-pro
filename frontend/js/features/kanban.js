@@ -3,6 +3,7 @@
 // Filtros + Drag & Drop + Contadores Animados
 // ========================================
 import { Toast } from '../core/toast.js';
+import { apiFetchWithRefresh } from '../core/api.js';
 import { $, $$, animateCounter } from '../core/utils.js';
 
 class KanbanManager {
@@ -195,11 +196,10 @@ class KanbanManager {
     }
 
     try {
-      const response = await fetch(`/api/tasks/${taskId}/status`, {
+      const response = await apiFetchWithRefresh(`/api/tasks/${taskId}/status`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ status: newStatus })
       });

@@ -3,6 +3,8 @@
 // ========================================
 import { Toast } from '../core/toast.js';
 import { $ } from '../core/utils.js';
+import { Config } from '../core/config.js';
+import { clearTokens, getAccessToken } from '../core/api.js';
 
 class LogoutManager {
     constructor() {
@@ -64,8 +66,45 @@ class LogoutManager {
         // ⏳ Aguarda e submete
         setTimeout(() => {
             console.log('👋 Submetendo form de logout...');
+
+            // 🔐 Limpa tokens do localStorage ANTES de submeter o form.
+            // Antes o logout só destruía a sessão SSR (cookie), deixando os
+            // tokens JWT no localStorage — vulneráveis a XSS após logout.
+            this._cleanupTokens();
+
             form.submit();
         }, 1000);
+    }
+
+    /**
+     * 🔐 Limpa os tokens de autenticação do storage.
+     *
+     * Best-effort: tenta revogar o refresh token no backend (fire-and-forget)
+     * e SEMPRE limpa os tokens do localStorage, mesmo se o fetch falhar.
+     */
+    _cleanupTokens() {
+        const token = getAccessToken();
+
+        // Best-effort: avisa o backend para revogar os refresh tokens.
+        // Não aguardamos a resposta — o logout SSR (form.submit()) já derruba a sessão,
+        // e não queremos atrasar a navegação do usuário.
+        if (token) {
+            try {
+                fetch(Config.auth.logoutUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(err => console.warn('Aviso: logout no backend falhou (tokens locais foram limpos):', err));
+            } catch (err) {
+                // Ignora — o importante é limpar o storage local
+            }
+        }
+
+        // Garante a limpeza local em TODOS os casos
+        clearTokens();
+        console.log('🔐 Tokens locais limpos após logout.');
     }
 }
 

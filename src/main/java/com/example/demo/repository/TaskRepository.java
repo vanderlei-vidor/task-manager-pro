@@ -4,6 +4,8 @@ import com.example.demo.model.Task;
 import com.example.demo.model.TaskStatus;
 import com.example.demo.model.Usuario;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,6 +31,15 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // LazyInitializationException!)
     @Query("SELECT DISTINCT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.usuario.id = :usuarioId")
     List<Task> findByUsuarioIdWithTags(@Param("usuarioId") Long usuarioId);
+
+    // ✅ PAGINAÇÃO: Mesma query de cima, mas paginada.
+    // countQuery explícito é OBRIGATÓRIO porque DISTINCT + JOIN FETCH
+    // quebra a derivação automática do count do Spring Data.
+    @Query(
+        value = "SELECT DISTINCT t FROM Task t LEFT JOIN FETCH t.tags WHERE t.usuario.id = :usuarioId",
+        countQuery = "SELECT COUNT(DISTINCT t) FROM Task t WHERE t.usuario.id = :usuarioId"
+    )
+    Page<Task> findByUsuarioIdWithTagsPaginado(@Param("usuarioId") Long usuarioId, Pageable pageable);
 
     // ✅ NOVO: Busca por status com tags carregadas
     @EntityGraph(attributePaths = { "tags" })

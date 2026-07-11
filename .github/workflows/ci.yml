@@ -1,0 +1,76 @@
+# =====================================================================
+# CI — Task Manager Pro
+# Roda testes (mvn verify) e build do frontend (vite) a cada PR/push em main
+# =====================================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # ===================================================================
+  # JOB 1: TESTES
+  # Backend (Maven) + Frontend (Vite) + relatório JaCoCo
+  # ===================================================================
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # --- Setup ---
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: 📦 Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # --- Frontend build (gera static/dist/, que o Maven empacota no jar) ---
+      - name: 🔧 Build Frontend (Vite)
+        run: |
+          npm ci
+          npm run build
+
+      # --- Backend: testes + relatório JaCoCo ---
+      # Testcontainers (PostgreSQL) precisa do Docker, disponível no ubuntu-latest
+      - name: 🧪 Rodar testes (mvn verify)
+        env:
+          # Secret de teste — tem 64+ chars para passar o fail-fast do JwtUtilService
+          JWT_SECRET: ${{ secrets.JWT_SECRET_CI || 'ci-test-secret-with-at-least-32-bytes-for-hs256-aaaaaaaa' }}
+        run: ./mvnw verify -B
+
+      # --- Upload do relatório JaCoCo como artifact ---
+      - name: 📊 Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/index.html
+          retention-days: 7
+
+      # --- Build do JAR (testes já passaram, pula aqui) ---
+      - name: 📦 Package JAR
+        run: ./mvnw package -DskipTests -B
+
+      - name: 📦 Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-manager-pro-jar
+          path: target/demo-0.0.1-SNAPSHOT.jar
+          retention-days: 7
