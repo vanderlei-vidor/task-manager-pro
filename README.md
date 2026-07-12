@@ -68,11 +68,11 @@ I wanted to build something that **simulated a real corporate environment** — 
 
 As development progressed, I started asking myself questions like:
 
-> 🔒 *How do I prevent one user from viewing another user's data?*  
-> 🔑 *How do companies keep sessions secure using JWT?*  
-> 🏗️ *How do I organize hundreds of classes without turning the project into an unmaintainable monolith?*  
-> 📈 *How do I prepare the application to scale?*  
-> 🎨 *How do I improve user experience without compromising performance?*
+>  *How do I prevent one user from viewing another user's data?*  
+>  *How do companies keep sessions secure using JWT?*  
+>  *How do I organize hundreds of classes without turning the project into an unmaintainable monolith?*  
+>  *How do I prepare the application to scale?*  
+>  *How do I improve user experience without compromising performance?*
 
 **This project was born precisely to answer these questions.**
 
@@ -110,22 +110,22 @@ Most tutorials stop at "create a login form". But in the real world, authenticat
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  🔑 JWT (JSON Web Token)                                │
+│   JWT (JSON Web Token)                                │
 │     → Stateless authentication                          │
 │     → Signed with HS256 (HMAC-SHA256)                   │
 │     → Contains user claims (email, role, userId)        │
 ├─────────────────────────────────────────────────────────┤
-│  🔄 Refresh Token Rotation                              │
+│   Refresh Token Rotation                              │
 │     → Each refresh generates a NEW token                │
 │     → Old token is immediately revoked                  │
 │     → Prevents replay attacks                           │
 ├─────────────────────────────────────────────────────────┤
-│  🧹 Automatic Cleanup (Scheduled Job)                   │
+│   Automatic Cleanup (Scheduled Job)                   │
 │     → Runs daily at 3 AM (cron: 0 0 3 * * ?)            │
 │     → Deletes expired tokens from database              │
 │     → Keeps storage clean and performant                │
 ├─────────────────────────────────────────────────────────┤
-│  🛡️ Spring Security Integration                         │
+│   Spring Security Integration                         │
 │     → Custom JwtAuthenticationFilter                    │
 │     → Stateless session management                      │
 │     → Brute-force protection (5 attempts → 15min lock)  │
@@ -146,10 +146,10 @@ In real SaaS systems, **data belongs to different clients**. A single bug can ex
 **The solution implemented:**
 
 ```java
-// ❌ WRONG: Generic query (vulnerable to IDOR attacks)
+//  WRONG: Generic query (vulnerable to IDOR attacks)
 taskRepository.findById(taskId);
 
-// ✅ CORRECT: Scoped to authenticated user
+//  CORRECT: Scoped to authenticated user
 taskRepository.findByIdAndUsuarioId(taskId, authenticatedUserId);
 ```
 
@@ -198,11 +198,11 @@ static/
 
 **Key decisions:**
 
-- ✅ **SASS over plain CSS** → Variables, mixins, and nesting reduce duplication by ~60%
-- ✅ **ES6 Modules** → Each file has a single responsibility
-- ✅ **Vite as bundler** → Fast HMR in dev, optimized build for production
-- ✅ **Design Tokens** → Centralized variables make theme changes trivial
-- ✅ **Component-based architecture** → Inspired by Linear, Notion, and Asana
+-  **SASS over plain CSS** → Variables, mixins, and nesting reduce duplication by ~60%
+-  **ES6 Modules** → Each file has a single responsibility
+-  **Vite as bundler** → Fast HMR in dev, optimized build for production
+-  **Design Tokens** → Centralized variables make theme changes trivial
+-  **Component-based architecture** → Inspired by Linear, Notion, and Asana
 
 **Key insight:** Front-end architecture isn't about frameworks — it's about **clear boundaries** and **single responsibilities**.
 
@@ -365,10 +365,10 @@ MapStruct generates **plain Java code at compile time** — fast, type-safe, and
 > *"Why not D3? It's more powerful."*
 
 D3 is **incredibly powerful** but has a steep learning curve. For dashboards with standard chart types (bar, line, doughnut), Chart.js provides:
-- ✅ Responsive out-of-the-box
-- ✅ Canvas-based (fast rendering)
-- ✅ Simple API
-- ✅ Dark mode support
+-  Responsive out-of-the-box
+-  Canvas-based (fast rendering)
+-  Simple API
+-  Dark mode support
 
 **Trade-off accepted:** Less customization than D3 (not needed for this use case).
 
@@ -442,10 +442,10 @@ At first, everything lived in two monolithic files:
 As features grew (Kanban, Calendar, Reports, Tags), the files became **unmaintainable**. Finding a single style rule felt like archaeology.
 
 **The Pain:**
-- ❌ Duplicated CSS rules across pages
-- ❌ Global variables scattered everywhere
-- ❌ JavaScript functions with 200+ lines
-- ❌ No separation between "core", "components", and "pages"
+-  Duplicated CSS rules across pages
+-  Global variables scattered everywhere
+-  JavaScript functions with 200+ lines
+-  No separation between "core", "components", and "pages"
 
 **The Solution:**
 
@@ -473,10 +473,10 @@ js/
 ```
 
 **The Result:**
-- ✅ **25 SCSS files** instead of 1 monolith
-- ✅ **11 JS modules** with single responsibilities
-- ✅ **Vite** as bundler (lightning-fast HMR)
-- ✅ **Zero duplication** thanks to mixins and shared tokens
+-  **25 SCSS files** instead of 1 monolith
+-  **11 JS modules** with single responsibilities
+-  **Vite** as bundler (lightning-fast HMR)
+-  **Zero duplication** thanks to mixins and shared tokens
 
 **The Lesson:**
 > *"Architecture isn't about frameworks — it's about clear boundaries and single responsibilities."*
@@ -490,15 +490,15 @@ js/
 **The Problem:**
 
 A simple "generate token, store in DB" approach is **not enough** for production. Real-world attacks include:
-- 🎯 **Replay attacks** (stolen token reused)
-- 🎯 **Token theft** (long-lived tokens = big attack window)
-- 🎯 **Stale tokens** (expired tokens cluttering the database)
+-  **Replay attacks** (stolen token reused)
+-  **Token theft** (long-lived tokens = big attack window)
+-  **Stale tokens** (expired tokens cluttering the database)
 
 **The Pain:**
-- ❌ First version used long-lived JWTs (7 days) — **security nightmare**
-- ❌ No token revocation — once issued, always valid
-- ❌ No cleanup — database grew with expired tokens
-- ❌ `LazyInitializationException` when rotating tokens (Hibernate proxy issue)
+-  First version used long-lived JWTs (7 days) — **security nightmare**
+-  No token revocation — once issued, always valid
+-  No cleanup — database grew with expired tokens
+-  `LazyInitializationException` when rotating tokens (Hibernate proxy issue)
 
 **The Solution:**
 
@@ -519,15 +519,15 @@ public void cleanupExpiredTokens() {
 ```
 
 **Key fixes:**
-- ✅ **Token rotation**: Each refresh revokes the old token and creates a new one
-- ✅ **Family revocation**: If a token is compromised, all related tokens are invalidated
-- ✅ **Explicit user fetch**: Avoided `LazyInitializationException` by re-fetching the user
-- ✅ **19 unit tests** covering all edge cases (expired, revoked, rotation, cleanup)
+-  **Token rotation**: Each refresh revokes the old token and creates a new one
+-  **Family revocation**: If a token is compromised, all related tokens are invalidated
+-  **Explicit user fetch**: Avoided `LazyInitializationException` by re-fetching the user
+-  **19 unit tests** covering all edge cases (expired, revoked, rotation, cleanup)
 
 **The Result:**
-- ✅ **100% test coverage** on `RefreshTokenService`
-- ✅ **Attack window reduced** from 7 days to 15 minutes
-- ✅ **Database stays clean** with automatic cleanup
+-  **100% test coverage** on `RefreshTokenService`
+-  **Attack window reduced** from 7 days to 15 minutes
+-  **Database stays clean** with automatic cleanup
 
 **The Lesson:**
 > *"Security isn't a feature you add later — it's a design principle that must be baked into every layer from day one."*
@@ -543,20 +543,20 @@ public void cleanupExpiredTokens() {
 In a SaaS system, **data isolation is non-negotiable**. A single bug can expose one user's tasks, tags, or reports to another user.
 
 **The Pain:**
-- ❌ Initial queries used `findById(taskId)` — **vulnerable to IDOR attacks**
-- ❌ Tags could be assigned to tasks from other users
-- ❌ Reports could leak data across tenants
-- ❌ No centralized ownership validation
+-  Initial queries used `findById(taskId)` — **vulnerable to IDOR attacks**
+-  Tags could be assigned to tasks from other users
+-  Reports could leak data across tenants
+-  No centralized ownership validation
 
 **The Solution:**
 
 I enforced **ownership validation at every layer**:
 
 ```java
-// ❌ WRONG: Generic query (vulnerable)
+//  WRONG: Generic query (vulnerable)
 taskRepository.findById(taskId);
 
-// ✅ CORRECT: Scoped to authenticated user
+//  CORRECT: Scoped to authenticated user
 taskRepository.findByIdAndUsuarioId(taskId, authenticatedUserId);
 ```
 
@@ -571,9 +571,9 @@ taskRepository.findByIdAndUsuarioId(taskId, authenticatedUserId);
 | **Reports** | All exports scoped to authenticated user |
 
 **The Result:**
-- ✅ **Zero data leaks** in 104 tests
-- ✅ **IDOR attacks blocked** at the repository level
-- ✅ **Clear ownership model** throughout the codebase
+-  **Zero data leaks** in 104 tests
+-  **IDOR attacks blocked** at the repository level
+-  **Clear ownership model** throughout the codebase
 
 **The Lesson:**
 > *"Trust no one — not even your own frontend. Validate ownership at every layer."*
@@ -589,10 +589,10 @@ taskRepository.findByIdAndUsuarioId(taskId, authenticatedUserId);
 I started with **H2 in-memory database** for tests. Everything worked perfectly — until deployment.
 
 **The Pain:**
-- ❌ H2 has a **different SQL dialect** than PostgreSQL
-- ❌ Tests passed in H2 but **failed in production**
-- ❌ JSON queries worked in H2 but broke in PostgreSQL
-- ❌ False sense of security
+-  H2 has a **different SQL dialect** than PostgreSQL
+-  Tests passed in H2 but **failed in production**
+-  JSON queries worked in H2 but broke in PostgreSQL
+-  False sense of security
 
 **The Solution:**
 
@@ -621,10 +621,10 @@ class AuthControllerIntegrationTest {
 ```
 
 **The Result:**
-- ✅ **17 integration tests** covering full auth flows
-- ✅ **Real PostgreSQL** catches dialect-specific bugs
-- ✅ **104 total tests** with 100% coverage on critical services
-- ✅ **Confidence to deploy** without fear
+-  **16 integration tests** covering full auth flows
+-  **Real PostgreSQL** catches dialect-specific bugs
+-  **104 total tests** with 100% coverage on critical services
+-  **Confidence to deploy** without fear
 
 **The Lesson:**
 > *"Tests that don't mirror production are worse than no tests at all."*
@@ -640,10 +640,10 @@ class AuthControllerIntegrationTest {
 Early in development, I hardcoded database credentials and JWT secrets in `application.properties`. One `git push` away from a **security disaster**.
 
 **The Pain:**
-- ❌ Passwords in plain text in the codebase
-- ❌ JWT secret exposed in GitHub history
-- ❌ No clear separation between dev and production configs
-- ❌ Manual environment setup for new developers
+-  Passwords in plain text in the codebase
+-  JWT secret exposed in GitHub history
+-  No clear separation between dev and production configs
+-  Manual environment setup for new developers
 
 **The Solution:**
 
@@ -668,10 +668,10 @@ JWT_SECRET=real-secret-here
 ```
 
 **The Result:**
-- ✅ **Zero secrets** in GitHub history
-- ✅ **Easy onboarding** with `.env.example`
-- ✅ **Production-ready** with Railway/Render env vars
-- ✅ **Spring-dotenv** integration for seamless local dev
+-  **Zero secrets** in GitHub history
+-  **Easy onboarding** with `.env.example`
+-  **Production-ready** with Railway/Render env vars
+-  **Spring-dotenv** integration for seamless local dev
 
 **The Lesson:**
 > *"Secrets in code are bugs waiting to happen. Treat them like production incidents."*
@@ -707,15 +707,15 @@ Each phase was driven by a real question, a real challenge, or a real limitation
 ```mermaid
 graph TD
     A[🌱 Simple CRUD] --> B[🔐 Authentication]
-    B --> C[📊 Dashboard]
-    C --> D[📋 Kanban Board]
-    D --> E[📅 Calendar System]
-    E --> F[📈 Reports & Exports]
-    F --> G[🔑 JWT Tokens]
-    G --> H[🔄 Refresh Token Rotation]
-    H --> I[🏢 Multi-Tenant Isolation]
-    I --> J[🏗️ Enterprise Architecture]
-    J --> K[🚀 Current Version 1.0]
+    B --> C[ Dashboard]
+    C --> D[ Kanban Board]
+    D --> E[ Calendar System]
+    E --> F[ Reports & Exports]
+    F --> G[ JWT Tokens]
+    G --> H[ Refresh Token Rotation]
+    H --> I[ Multi-Tenant Isolation]
+    I --> J[ Enterprise Architecture]
+    J --> K[ Current Version 1.0]
     
     style A fill:#e0e7ff,stroke:#6366f1
     style K fill:#6366f1,stroke:#4f46e5,color:#fff
@@ -884,16 +884,16 @@ graph TD
 
 | Metric | Count |
 |--------|-------|
-| 📁 **Java Classes** | 40+ |
-| 🧪 **Unit Tests** | 88 |
-| 🌐 **Integration Tests** | 17 |
-| 🎯 **Total Tests** | 104 |
-| 📊 **Code Coverage** | 100% (critical services) |
-| 🎨 **SCSS Modules** | 25 |
-| 📦 **JS Modules** | 11 |
-| 🏗️ **Architecture Layers** | 5 |
-| 🔌 **API Endpoints** | 20+ |
-| 📄 **HTML Templates** | 10+ |
+|  **Java Classes** | 40+ |
+|  **Unit Tests** | 88 |
+|  **Integration Tests** | 17 |
+|  **Total Tests** | 104 |
+|  **Code Coverage** | 100% (critical services) |
+|  **SCSS Modules** | 25 |
+|  **JS Modules** | 11 |
+|  **Architecture Layers** | 5 |
+|  **API Endpoints** | 20+ |
+|  **HTML Templates** | 10+ |
 
 <br/>
 
@@ -1107,10 +1107,10 @@ A complete task management system built with **enterprise-grade features** and *
 
 ### 🎨 UI/UX
 
-- 🌙 **Dark Mode** — Smooth transitions
-- 📱 **Responsive** — Mobile-first design
-- ✨ **Animations** — Micro-interactions
-- 📖 **[Design System](UI_DESIGN_SYSTEM.md)** — Complete documentation
+-  **Dark Mode** — Smooth transitions
+-  **Responsive** — Mobile-first design
+-  **Animations** — Micro-interactions
+-  **[Design System](UI_DESIGN_SYSTEM.md)** — Complete documentation
 
 <br/>
 
@@ -1127,11 +1127,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 📊 **Dashboard**
 <img src="https://img.shields.io/badge/Real--time-✓-brightgreen" alt="Real-time"/>
 
-- 📈 Live statistics
-- 🎯 Progress tracking
-- 📊 Animated charts
-- 🔥 Activity heatmap
-- ⚡ Quick actions
+-  Progress tracking
+-  Animated charts
+-  Activity heatmap
+-  Live statistics
+-  Quick actions
 
 </td>
 <td width="33%" align="center" valign="top">
@@ -1139,11 +1139,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 📋 **Kanban Board**
 <img src="https://img.shields.io/badge/Drag--Drop-✓-brightgreen" alt="Drag-Drop"/>
 
-- 🎨 3-column workflow
-- 🏷️ Priority indicators
-- ⏰ Deadline tracking
-- 🔍 Quick filters
-- ✨ Smooth animations
+-  3-column workflow
+-  Prio
+-  Quick filters
+-  Smootrity indicators
+-  Deadline trackingh animations
 
 </td>
 <td width="33%" align="center" valign="top">
@@ -1151,11 +1151,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 📅 **Calendar**
 <img src="https://img.shields.io/badge/3--Views-✓-brightgreen" alt="3-Views"/>
 
-- 📆 Month view
-- 📊 Week view
-- 📝 Day view
-- 🎯 Color-coded tasks
-- 🔄 Easy navigation
+-  Month view
+-  Week view
+-  Day view
+-  Color-coded tasks
+-  Easy navigation
 
 </td>
 </tr>
@@ -1174,21 +1174,21 @@ A complete task management system built with **enterprise-grade features** and *
 <td width="50%" align="center" valign="top">
 
 ### 🏷️ **Tag System**
-- 🎨 Custom colors
-- 🔍 Filter by tags
-- 📊 Usage statistics
-- ✏️ Inline editing
-- 🗑️ Bulk operations
+-  Custom colors
+-  Filter by tags
+-  Usage statistics
+-  Inline editing
+-  Bulk operations
 
 </td>
 <td width="50%" align="center" valign="top">
 
 ### 🔍 **Smart Search**
-- ⚡ Real-time filtering
-- 🎯 Multi-field search
-- ⌨️ Keyboard shortcuts
-- 📝 Search history
-- 🚀 Instant results
+-  Real-time filtering
+-  Multi-field search
+-  Keyboard shortcuts
+-  Search history
+-  Instant results
 
 </td>
 </tr>
@@ -1207,11 +1207,11 @@ A complete task management system built with **enterprise-grade features** and *
 <td width="50%" align="center" valign="top">
 
 ### 🔔 **Notifications**
-- ✅ Success toasts
-- ❌ Error alerts
-- ⚠️ Warnings
-- ℹ️ Info messages
-- 🎨 Auto-dismiss
+-  Success toasts
+-  Error alerts
+-  Warnings
+-  Info messages
+-  Auto-dismiss
 
 </td>
 </tr>
@@ -1232,11 +1232,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 🔑 **JWT Authentication**
 <img src="https://img.shields.io/badge/Stateless-✓-blue" alt="Stateless"/>
 
-- 🎫 Access tokens (15min)
-- 🔄 Refresh tokens (7d)
-- 🔒 HS256 signing
-- 🛡️ Token rotation
-- 🚫 Auto-revocation
+-  Access tokens (15min)
+-  Refresh tokens (7d)
+-  HS256 signing
+-  Token rotation
+-  Auto-revocation
 
 </td>
 <td width="33%" align="center" valign="top">
@@ -1244,11 +1244,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 🏢 **Multi-Tenancy**
 <img src="https://img.shields.io/badge/Isolated-✓-blue" alt="Isolated"/>
 
-- 🔒 Data isolation
-- 🛡️ IDOR prevention
-- 👤 User-scoped queries
-- 🎯 Ownership validation
-- 🚫 Zero data leaks
+-  Data isolation
+-  IDOR prevention
+-  User-scoped queries
+-  Ownership validation
+-  Zero data leaks
 
 </td>
 <td width="33%" align="center" valign="top">
@@ -1256,11 +1256,11 @@ A complete task management system built with **enterprise-grade features** and *
 ### 🛡️ **Security Features**
 <img src="https://img.shields.io/badge/Enterprise-✓-blue" alt="Enterprise"/>
 
-- 🔐 BCrypt passwords
-- 🚫 Brute-force protection
-- ⚡ Rate limiting
-- 🔒 Security headers
-- 📝 Audit logging
+-  BCrypt passwords
+-  Brute-force protection
+-  Rate limiting
+-  Security headers
+-  Audit logging
 
 </td>
 </tr>
@@ -1279,37 +1279,37 @@ A complete task management system built with **enterprise-grade features** and *
 <td width="25%" align="center" valign="top">
 
 ### 📊 **Charts**
-- 🥧 Doughnut charts
-- 📊 Bar charts
-- 📈 Line charts
-- 🎨 Custom themes
+-  Doughnut charts
+-  Bar charts
+-  Line charts
+-  Custom themes
 
 </td>
 <td width="25%" align="center" valign="top">
 
 ### 📄 **PDF Export**
-- 📋 Task summaries
-- 📊 Reports
-- 🎨 Custom templates
-- 📦 OpenPDF engine
+-  Task summaries
+-  Reports
+-  Custom templates
+-  OpenPDF engine
 
 </td>
 <td width="25%" align="center" valign="top">
 
 ### 📑 **Excel Export**
-- 📊 Data tables
-- 🎨 Formatted cells
-- 📦 Apache POI
-- ⚡ Bulk operations
+-  Data tables
+-  Formatted cells
+-  Apache POI
+-  Bulk operations
 
 </td>
 <td width="25%" align="center" valign="top">
 
 ### 🔥 **Heatmap**
-- 📅 365-day view
-- 🎨 Activity levels
-- 📊 GitHub-style
-- 🎯 Visual insights
+-  365-day view
+-  Activity levels
+-  GitHub-style
+-  Visual insights
 
 </td>
 </tr>
@@ -1328,28 +1328,28 @@ A complete task management system built with **enterprise-grade features** and *
 <td width="33%" align="center" valign="top">
 
 ### 🌙 **Dark Mode**
-- 🎨 Smooth transitions
-- 💾 Persistent preference
-- 🖥️ Full coverage
-- 👁️ Eye-friendly
+-  Smooth transitions
+-  Persistent preference
+-  Full coverage
+-  Eye-friendly
 
 </td>
 <td width="33%" align="center" valign="top">
 
 ### 📱 **Responsive**
-- 📱 Mobile-first
-- 💻 Tablet optimized
-- 🖥️ Desktop enhanced
-- 🎯 Touch-friendly
+-  Mobile-first
+-  Tablet optimized
+-  Desktop enhanced
+-  Touch-friendly
 
 </td>
 <td width="33%" align="center" valign="top">
 
 ### ✨ **Animations**
-- 🎬 Entry animations
-- 🔄 Hover effects
-- ⚡ Smooth transitions
-- 🎨 Micro-interactions
+-  Entry animations
+-  Hover effects
+-  Smooth transitions
+-  Micro-interactions
 
 </td>
 </tr>
@@ -1444,19 +1444,7 @@ See the application in action. Click on any image to view it in full size.
 <div align="center">
 
 ### 🎨 Light Mode
-
-</div>
-
-<table>
-<tr>
-<td width="50%" align="center">
-<strong>📊 Dashboard</strong><br/>
-<em>Real-time statistics and progress tracking</em><br/>
-<a href="screenshots/dashboard-light-tela.webp" target="_blank">
-<img src="screenshots/dashboard-light-tela.webp" alt="Dashboard Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
-</a>
-</td>
-<td width="50%" align="center">
+">
 <strong>📋 Kanban Board</strong><br/>
 <em>Visual task management with drag-and-drop</em><br/>
 <a href="screenshots/kanban-light-tela.webp" target="_blank">
@@ -1472,6 +1460,18 @@ See the application in action. Click on any image to view it in full size.
 <a href="screenshots/calendar-month-light.webp" target="_blank">
 <img src="screenshots/calendar-month-light.webp" alt="Calendar Month Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
 </a>
+</div>
+
+<table>
+<tr>
+<td width="50%" align="center">
+<strong>📊 Dashboard</strong><br/>
+<em>Real-time statistics and progress tracking</em><br/>
+<a href="screenshots/dashboard-light-tela.webp" target="_blank">
+<img src="screenshots/dashboard-light-tela.webp" alt="Dashboard Light Mode" width="100%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
+</a>
+</td>
+<td width="50%" align="center
 </td>
 <td width="50%" align="center">
 <strong>📅 Calendar (Week View)</strong><br/>
@@ -1986,11 +1986,11 @@ Install Node.js from [nodejs.org](https://nodejs.org/) and restart your terminal
 
 | Resource | Description |
 |----------|-------------|
-| 📖 [API Documentation](docs/API.md) | Complete REST API reference |
-| 🏗️ [Architecture Guide](docs/ARCHITECTURE.md) | System design and patterns |
-| 🧪 [Testing Guide](docs/TESTING.md) | How to write and run tests |
-| 🐳 [Docker Guide](docs/DOCKER.md) | Containerization details |
-| 🚀 [Deployment Guide](docs/DEPLOYMENT.md) | Deploy to Railway/Render |
+|  [API Documentation](docs/API.md) | Complete REST API reference |
+|  [Architecture Guide](docs/ARCHITECTURE.md) | System design and patterns |
+|  [Testing Guide](docs/TESTING.md) | How to write and run tests |
+|  [Docker Guide](docs/DOCKER.md) | Containerization details |
+|  [Deployment Guide](docs/DEPLOYMENT.md) | Deploy to Railway/Render |
 
 <br/>
 
